@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StudySheet - Home</title>
+</head>
+<body>
+
+    <!-- Top Section -->
+    <div>
+        <h2>Home page</h2>
+        
+        <!-- Account Button -->
+        <div>
+            <button>i</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Main Content -->
+    <div>
+        <h1>Welcome to StudySheet !</h1>
+        <p>The green way to create and share study sheets</p>
+
+        <!-- Action Buttons -->
+        <div>
+            <button>Create study Sheet</button>
+            <button>View study Sheet</button>
+        </div>
+    </div>
+
+</body>
+</html>
