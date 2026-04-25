@@ -9,5 +9,5 @@ import (
 func main() {
     http.HandleFunc("/", routers.Handler)
 	http.HandleFunc("/home", routers.HomeHandler)
-    log.Fatal(http.ListenAndServe(":8080", nil))
+    log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 }

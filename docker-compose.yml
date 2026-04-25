@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mysql
+    container_name: noteshare_efrei_db
+    volumes:
+      - "./.data/db:/var/lib/mysql"
+    env_file: "db.env"
+    networks:
+      - noteshare_efrei_network
+    ports:
+      - "3306:3306"
+
+  go-app:
+    build:
+      context: .
+    container_name: noteshare_efrei_app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    env_file: "go-app.env"
+    networks:
+      - noteshare_efrei_network
+    command: >
+      sh -c "
+      until nc -z db 3306;
+      do
+        echo 'Waiting for MySQL...';
+        sleep 2;
+      done;
+      ./app
+      "
+
+networks:
+  noteshare_efrei_network:
+    driver: bridge

@@ -6,3 +6,7 @@ Currently for development
 # inside the project root
 go build . && ./NoteShareEFREI
 ```
+With the docker :
+```sh
+docker-compose up --build
+```
