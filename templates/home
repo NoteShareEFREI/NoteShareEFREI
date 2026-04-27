@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>StudySheet - Home</title>
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 
     <!-- Top Section -->
     <div>
-        <h2>Home page</h2>
+        <h2 class="title">Home page</h2>
         
         <!-- Account Button -->
         <div>

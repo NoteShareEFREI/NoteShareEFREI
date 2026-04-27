@@ -1,0 +1,88 @@
+body{
+    margin: 0;
+    font-family: Verdana, sans-serif;
+    background-color: light-dark(hsl(0, 0%, 95%), hsl(0, 0%, 15%));
+}
+
+.title{
+    text-align: center;
+    color: light-dark(hsl(113, 61%, 41%), hsl(113, 40%, 41%));
+    font-family: Verdana, sans-serif;
+}
+
+p{
+    color: light-dark(black, rgb(242, 242, 242));
+}
+
+a:link{
+    color: light-dark(hsl(113, 61%, 41%), hsl(113, 40%, 41%));
+}
+
+a:hover{
+    color: light-dark(hsl(113, 61%, 30%), hsl(113, 40%, 30%)); 
+}
+
+button{
+    padding: 5px 15px;
+    border-radius: 5px;
+    border-width: 0;
+    background-color: light-dark(hsl(113, 61%, 38%), hsl(113, 40%, 38%));
+    color: rgb(242, 242, 242);
+    cursor: pointer;
+}
+
+input{
+    padding: 5px 15px;
+    border-radius: 5px;
+    border: none;
+    background-color: light-dark(hsl(0, 0%, 95%), hsl(0, 0%, 20%));
+    color: light-dark(black, rgb(242, 242, 242));
+}
+
+input:focus{
+    outline: 2px solid light-dark(hsl(113, 61%, 38%), hsl(113, 40%, 38%));
+}
+
+.exit{
+    border-radius: 5px;
+    background-color: light-dark(hsl(0, 77%, 41%), hsl(0, 50%, 41%));
+}
+
+.center{
+    text-align: center;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.row{
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.box{
+    border: 3px solid black;
+    padding: 20px;
+    background-color: light-dark(white, hsl(0, 0%, 20%));
+}
+
+.space-top{
+    margin-top: 20px;
+}
+
+.sidebar{
+    width: 200px;
+    background-color: light-dark(hsl(113, 61%, 41%), hsl(113, 40%, 41%));
+    color: white;
+    padding: 15px;
+}
+
+.panel{
+    border: 3px solid black;
+    padding: 20px;
+    background-color: light-dark(white, hsl(0, 0%, 20%));
+}
