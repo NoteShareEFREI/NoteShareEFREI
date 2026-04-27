@@ -1,0 +1,30 @@
+<div class="insert_in_page">
+    <p style="text-align: center;">Log in</p>
+
+    <form action="{{.Actionurl}}" method="post" autocomplete="off">
+        <input name="name" required type="text" placeholder="Enter username or email" size="40"/><br>
+        <input name="pwd" required type="password" placeholder="Enter Password" minlength="8" maxlength="32" size="40" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\|:\{\}£¬_+#\[\]^\(~\)\-])(?=.*[^`'.;,\\])[A-Za-z\d@#$!\[\]%*^?&\|\(~\):\{\}£¬_+\-]{8,31}" />
+        <div>
+            <button type="button" onclick="toggle_pwd_info()" class="invisible">🛈</button>
+
+            <!-- PWD INFO -->
+             <div id="toggle">
+             <p>
+                The password must be at least 8 characters long.<br>
+                The password must be less than 32 characters long.<br>
+                The password must contain at least one non-alphanumeric character (special characters), excluding dangerous ones (,;"\'`./<>) <br> <!-- / and <> are not in the regex expression since the html page wouldn't accept them. -->
+                The password must contain at least one lower case letter.<br>
+                The password must contain at least one upper case letter.
+             </p>
+             <!-- Maybe add a checker box if it's validated or not later on.-->
+             </div>
+        </div>
+        <button> Connect </button>
+    </form>
+    {{.Eventual_error_display}}
+    <!-- Error information to be added-->
+
+    <br>
+
+    <a href="create_account"> Do you not have an account yet?<br>Click here to create one!</a>
+</div>

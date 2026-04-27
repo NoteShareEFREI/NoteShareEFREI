@@ -1,0 +1,33 @@
+
+<div class="insert_in_page">
+    <p style="text-align: center;">Create account</p>
+
+    <form action="%s" method="post" autocomplete="off">
+        <input name="name" required type="text" placeholder="Enter username" size="40"/><br>
+        <input name="pwd" required type="password" placeholder="Enter Password" minlength="8" maxlength="32" size="40" pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&|:{}£¬_+#[\]^(~)-])(?=.*[^`\"'.;,\\])[A-Za-z\d@#$![\]%*^?&|(~):{}£¬_+-]{8,31}$' />
+        <div>
+            <button type="button" onclick="toggle_pwd_info()" class="invisible">🛈</button>
+
+            %s
+            <!-- PWD INFO ->
+             <p>
+                The password must be at least 8 characters long.<br>
+                The password must be less than 64 characters long.<br>
+                The password must contain at least one non-alphanumeric character (special characters), excluding dangerous ones (,;"\'`) <br>
+                The password must contain at least one lower case letter.<br>
+                The password must contain at least one upper case letter.
+             </p>
+             <!- Maybe add a checker box if it's validated or not later on.-->
+        </div>
+        <input name="mail" required type="email" placeholder="Enter your email address" size="40" inputmode="email"/><br>
+        <input name="phone" type="tel" placeholder="+xxx xx xx xx xx xx" size="40" inputmode="tel"/><br>
+        
+        <button> Create an account </button>
+    </form>
+    %s
+    <!-- Error information to be added-->
+
+    <br>
+
+    <a href="log_in"> Already have an account?<br>Click here to log in!</a>
+</div>

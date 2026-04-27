@@ -1,0 +1,7 @@
+<div class="insert_in_page">
+    <p style="text-align: center;"> 
+        Create an account if you want to publish a study sheet!
+    </p>
+    <a href="create_account">Create an account</a><br>
+    <a href="log_in">Log In</a>
+</div>
