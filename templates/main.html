@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../files/styles.css">
+    <script type="text/javascript" src="../js/script.js"></script>
+    <meta charset="UTF-8">
+    <title>StudySheet - Home</title>
+    
+</head>
+<body>
+
+    <!-- Top Section -->
+    <header>
+        <button>Create a study sheet</button>
+        <div class="search">
+            <input class="search-input" type="text" placeholder="Search a category or a study sheet">
+        </div>
+        <!-- Account Button -->
+        <button>i</button>
+    </header>
+
+    <div class="main">
+        <aside class="folders">
+            <!-- Folder 1 — expanded -->
+            <div class="folder-item" id="folder1">
+                <div class="folder-header" onclick="toggleFolder('folder1')">
+                    <span class="folder-toggle">−</span>
+                    <span>Folder1</span>
+                </div>
+                <div class="folder-children">
+                    <span class="sheet-link" onclick="loadSheet('Study sheet 1')">Study sheet 1</span>
+                    <span class="sheet-link" onclick="loadSheet('Study sheet 2')">Study sheet 2</span>
+                    <span class="sheet-link" onclick="loadSheet('Study sheet 3')">Study sheet 3</span>
+                </div>
+            </div>
+
+            <!-- Folder 2 — collapsed -->
+            <div class="folder-item folder-collapsed" id="folder2">
+                <div class="folder-header" onclick="toggleFolder('folder2')">
+                    <span class="folder-toggle">+</span>
+                    <span>Folder2</span>
+                </div>
+                <div class="folder-children">
+                    <span class="sheet-link" onclick="loadSheet('Sheet A')">Sheet A</span>
+                </div>
+            </div>
+
+            <!-- Folder 3 — collapsed -->
+            <div class="folder-item folder-collapsed" id="folder3">
+                <div class="folder-header" onclick="toggleFolder('folder3')">
+                    <span class="folder-toggle">+</span>
+                    <span>Folder3</span>
+                </div>
+                <div class="folder-children">
+                    <span class="sheet-link" onclick="loadSheet('Sheet B')">Sheet B</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Study sheet content -->
+        <main class="content">
+            <div class="sheet-card" id="sheet-display">
+            &lt;&lt; Study sheet &gt;&gt;
+            </div>
+        </main>
+
+        <!-- Comments panel -->
+        <aside class="comments">
+            <div>
+                <button  onclick="toggleComments()" title="Collapse comments">
+                    <div class="comment-bubble">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 2H4a2 2 0 00-2 2v18l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"/>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+            <div class="comments-collapsable" id="comments-panel">
+                <div class="comments-toggle">
+                    <span class="comments-label">Comments</span>
+                </div>
+
+                <div class="comment-card">
+                    <div class="comment-top">
+                        <span class="comment-username">User1</span>
+                    </div>
+                    <p class="comment-text">The study sheet is good but there is a point that need to be reworked.</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+</body>
+</html>
