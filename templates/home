@@ -3,6 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>StudySheet - Home</title>
+    <script>
+        addsheetmode = false;
+        function toggle_add_sheet_mode(){
+            addsheetmode = !addsheetmode;
+            if (addsheetmode){
+                document.getElementById("view").hidden = addsheetmode;
+                document.getElementById("studysheetuploadform").hidden = !addsheetmode;
+            } else {
+                document.getElementById("view").hidden = addsheetmode;
+                document.getElementById("studysheetuploadform").hidden = !addsheetmode;
+            }
+        } 
+        function doSubmit(){
+            if (confirm("Validate the submission of the study sheet:")){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    </script>
 </head>
 <body>
 
@@ -25,8 +45,17 @@
 
         <!-- Action Buttons -->
         <div>
-            <button>Create study Sheet</button>
-            <button>View study Sheet</button>
+            <span id="create">
+                <button onclick="toggle_add_sheet_mode()">Create study Sheet</button>
+                <form id="studysheetuploadform" action="createsheet" method="POST" enctype="multipart/form-data" onsubmit="doSubmit()" hidden>
+                    <label for="studysheet">Upload a studysheet:</label>
+                    <input type="file" id="studysheet" name="studysheet" accept="application/pdf, text/plain"/>
+                    <button type="submit">Submit studysheet</button>
+                </form>
+            </span>
+            <span id="view">
+                <button>View study Sheet</button>
+            </span>
         </div>
     </div>
 
