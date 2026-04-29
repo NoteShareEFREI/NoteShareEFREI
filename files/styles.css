@@ -2,6 +2,21 @@ body{
     margin: 0;
     font-family: Verdana, sans-serif;
     background-color: light-dark(hsl(0, 0%, 95%), hsl(0, 0%, 15%));
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 24px;
+    background: white;
+    border-bottom: 1px solid white;
+    flex-shrink: 0;
+    z-index: 10;
 }
 
 .title{
@@ -85,4 +100,206 @@ input:focus{
     border: 3px solid black;
     padding: 20px;
     background-color: light-dark(white, hsl(0, 0%, 20%));
+}
+
+.search {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input[type="text"] {
+    width: 100%;
+    max-width: 460px;
+    padding: 9px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #1a202c;
+    background: #f8f9fa;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.folders {
+    background: rgb(33, 134, 33);
+    overflow-y: auto;
+    padding: 16px 0;
+    max-width: 260px;
+}
+
+.main {
+    display:grid;
+    grid-template-columns: auto 1fr auto;
+    flex: 1;
+    overflow: hidden;
+}
+
+.folder-item {
+    padding: 0 16px;
+    margin-bottom: 4px;
+}
+
+.folder-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--sidebar-text);
+    font-weight: 600;
+    font-size: 15px;
+    user-select: none;
+    transition: background 0.12s;
+}
+.folder-header:hover { background: rgba(0,0,0,0.1); }
+
+.folder-toggle {
+    font-size: 13px;
+    font-weight: 700;
+    width: 16px;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.folder-children {
+    padding-left: 26px;
+    padding-bottom: 6px;
+}
+
+.sheet-link {
+    display: block;
+    padding: 5px 10px;
+    color: var(--sidebar-link);
+    font-size: 13.5px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.1s;
+}
+.sheet-link:hover { background: rgba(0,0,0,0.1); }
+
+.folder-collapsed .folder-children { display: none; }
+
+.folders span {color: #ffffff;}
+
+.sidebar-ellipsis {
+    padding: 8px 26px;
+    color: var(--sidebar-text);
+    font-size: 20px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
+
+/* ── Content area ── */
+.content {
+    overflow-y: auto;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.sheet-card {
+    background: white;
+    border: 1.5px solid white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 680px;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 18px;
+    font-family: 'Lora', serif;
+    letter-spacing: 0.01em;
+}
+
+/* ── Comments panel ── */
+.comments{
+    display:grid;
+    grid-template-columns: auto auto;
+}
+
+.comments-collapsable {
+    border-left: 1px solid white;
+    background: rgb(33, 134, 33);
+    overflow-y: auto;
+    padding: 20px 16px;
+    height: 100%;
+    max-width: 300px;
+}
+
+.comment-card {
+    border: 1.5px solid white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    background: white;
+}
+
+.comment-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.comment-bubble {
+    background: light-dark(hsl(113, 61%, 38%), hsl(113, 40%, 38%));
+    border-radius: 25%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 5px;
+}
+.comment-bubble svg { width: 17px; height: 17px; color: #ffffff; }
+
+.comment-username {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.comment-text {
+    font-size: 13.5px;
+    color: #64748b;
+    line-height: 1.55;
+}
+
+.comments-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.comments-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color:#64748b;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.1s;
+}
+.toggle-btn:hover { background: white; }
+
+.comments-collapsed { 
+    display: none;
 }
