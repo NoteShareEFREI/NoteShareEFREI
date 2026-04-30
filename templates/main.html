@@ -78,8 +78,16 @@
             <div class="comments-collapsable" id="comments-panel">
                 <div class="comments-toggle">
                     <span class="comments-label">Comments</span>
+                    <button onclick="displayAddComments()" title="Add a comment">+</button>
                 </div>
-
+                <div class="comment-input-wrap" id="adding-comment">
+                    <input
+                        class="comment-input"
+                        type="text"
+                        placeholder="Add a comment..."
+                        onkeydown="handleCommentInput(event)"
+                    />
+                </div>
                 <div class="comment-card">
                     <div class="comment-top">
                         <span class="comment-username">User1</span>

@@ -46,6 +46,8 @@ button{
     cursor: pointer;
 }
 
+button:hover { background: green; }
+
 input{
     padding: 5px 15px;
     border-radius: 5px;
@@ -121,6 +123,9 @@ input:focus{
     outline: none;
     transition: border-color 0.15s;
 }
+
+.search-input:focus { border-color: light-dark(hsl(113, 61%, 41%), hsl(113, 40%, 41%)); }
+.search-input::placeholder { color: #64748b; }
 
 .folders {
     background: rgb(33, 134, 33);
@@ -251,7 +256,6 @@ input:focus{
 }
 
 .comment-bubble {
-    background: light-dark(hsl(113, 61%, 38%), hsl(113, 40%, 38%));
     border-radius: 25%;
     width: 32px;
     height: 32px;
@@ -303,3 +307,29 @@ input:focus{
 .comments-collapsed { 
     display: none;
 }
+
+.comment-input-wrap {
+    display: none;
+    margin-top: 12px;
+
+}
+
+.comment-input {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: #64748b;
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    resize: none;
+    overflow: hidden;
+    line-height: 1.5;
+}
+
+.comment-input:focus{border-color: chartreuse;}
