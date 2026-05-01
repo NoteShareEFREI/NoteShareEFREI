@@ -9,12 +9,13 @@ import (
 )
 
 func main() {
+
 	//Initialize the JWT private keys.
 	backend.Setup()
 
 	//Global http requests
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-	http.Handle("/css/styles.css", http.NotFoundHandler()) //Handler not present.
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("files"))))
 
 	//Router end points
 	http.HandleFunc("/", routers.Handler)
