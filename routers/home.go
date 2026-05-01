@@ -11,7 +11,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	p, err := os.ReadFile(page_path)
 	if err != nil {
 		fmt.Print("Error reading home")
-		return 
+		return
 	}
 	fmt.Fprintf(w, "%s", p)
 }

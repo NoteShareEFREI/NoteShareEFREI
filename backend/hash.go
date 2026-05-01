@@ -1,4 +1,4 @@
-package crypto
+package backend
 
 import (
 	"golang.org/x/crypto/bcrypt"

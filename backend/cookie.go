@@ -1,4 +1,4 @@
-package crypto
+package backend
 
 import (
 	"fmt"
@@ -58,17 +58,18 @@ func GenerateJWT(id int) []byte {
 func ValidateJWT(token jwt.Token) (int, error) {
 	err := jwt.Validate(token, jwt.WithIssuer(`NOTESHAREEFREI`), jwt.WithRequiredClaim("acc"))
 	if err != nil {
-		fmt.Printf("token should fail validation\n")
-		return 0, nil
+		//Error is handled outside
+		return 0, err
 	}
 
-	account_id, err := jwt.Get[int](token, "acc")
+	account_id, err := jwt.Get[float64](token, "acc")
 	if err != nil {
-		fmt.Printf("token should fail validation\n")
-		return 0, nil
+		//Error is handled outside
+		return 0, err
 	}
+	fmt.Println("account id in float 64 : ", account_id, int(account_id))
 
-	return account_id, nil
+	return int(account_id), nil
 }
 
 func GenerateCookieWithJWT(JWT []byte) http.Cookie {
@@ -80,7 +81,7 @@ func GenerateCookieWithJWT(JWT []byte) http.Cookie {
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
-		MaxAge:   300, //Equals 1 day in seconds.
+		MaxAge:   86400, //Equals 1 day in seconds.
 	}
 	return jwtcookie
 }
