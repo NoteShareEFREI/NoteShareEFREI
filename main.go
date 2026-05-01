@@ -39,10 +39,13 @@ func main() {
 	http.HandleFunc("/home", routers.HomeHandler)
 	http.HandleFunc("/createsheet", routers.CreateSheetHandler)
 	http.HandleFunc("/login", routers.LoginHandler)
-
+	http.HandleFunc("/signup", routers.CreateHandler)
 	http.Handle("/account", backend.Accountmiddleware(http.HandlerFunc(routers.AccountHandler)))
+
 	//API end points (http responses with no html)
 	http.HandleFunc("/api/login", api.LoginHandler)
+	http.HandleFunc("/api/signup", api.CreateHandler)
 
-    log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
+	//http.ListenAndServeTLS() //Serve over https (need to create certificate and key with openssl)(Requires 'personal' information and the domain name on which the website is hsoted (FQDN))
 }

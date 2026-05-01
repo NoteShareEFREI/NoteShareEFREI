@@ -2,9 +2,9 @@
 <div class="insert_in_page">
     <p style="text-align: center;">Create account</p>
 
-    <form action="%s" method="post" autocomplete="off">
+    <form action="{{.Actionurl}}" method="post" autocomplete="off">
         <input name="name" required type="text" placeholder="Enter username" size="40"/><br>
-        <input name="pwd" required type="password" placeholder="Enter Password" minlength="8" maxlength="32" size="40" pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&|:{}£¬_+#[\]^(~)-])(?=.*[^`\"'.;,\\])[A-Za-z\d@#$![\]%*^?&|(~):{}£¬_+-]{8,31}$' />
+        <input name="pwd" required type="password" placeholder="Enter Password" minlength="8" maxlength="32" size="40" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\|:\{\}£¬_+#\[\]^\(~\)\-])(?=.*[^`'.;,\\])[A-Za-z\d@#$!\[\]%*^?&\|\(~\):\{\}£¬_+\-]{8,31}" />
         <div>
             <button type="button" onclick="toggle_pwd_info()" class="invisible">🛈</button>
 
@@ -19,12 +19,12 @@
              </p>
              <!- Maybe add a checker box if it's validated or not later on.-->
         </div>
-        <input name="mail" required type="email" placeholder="Enter your email address" size="40" inputmode="email"/><br>
+        <input name="mail" type="email" placeholder="Enter your email address" size="40" inputmode="email"/><br>
         <input name="phone" type="tel" placeholder="+xxx xx xx xx xx xx" size="40" inputmode="tel"/><br>
         
         <button> Create an account </button>
     </form>
-    %s
+    {{.Eventual_error_display}}
     <!-- Error information to be added-->
 
     <br>

@@ -8,7 +8,7 @@ import (
 	regexp2 "github.com/dlclark/regexp2/v2"
 )
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	err := r.ParseForm()
 	if err != nil {
@@ -21,6 +21,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		hash := r.Form.Get("pwd")
 		name := r.Form.Get("name")
+		email := r.Form.Get("mail")
+		Phone := r.Form.Get("phone")
 
 		//Here the original go package (regexp) does not support positive lookahead so i need to use another package.
 		re := regexp2.MustCompile(`(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\|:\{\}£¬_+#\[\]^\(~\)\-])(?=.*[^'.;,\\])[A-Za-z\d@#$!\[\]%*^?&\|\(~\):\{\}£¬_+\-]{8,31}`)
@@ -34,18 +36,29 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(name, hash) //To verify informations sent (Debug)
+		//Hash the password to not store it plain.
+		hash, salt, err := backend.NewHash(hash, name)
+		if err != nil {
 
-		/*correct, id := backend.VerifyPerson(hash, name) //Needs a database
-		if !correct {
-			w.WriteHeader(http.StatusForbidden) //403
+		}
+
+		//Debug print to get all the values to be put inside the database.
+		fmt.Println(name, hash, email, Phone, salt)
+
+		i := 0 //Counter for the loop
+		for while := true; while; while = err != nil && i < 5 {
+			//result, err = database.doquery(insert into account values(....))
+			i++
+		}
+		if err != nil {
+			//Even after retrying multiple times, we couldn't store the info in the database.
+			w.WriteHeader(http.StatusInternalServerError)
 			return
-		}*/
+		}
 
-		//Store the results in the database. For Create Account.
-		//database.Doquery("A query")
+		//Databese.doquery("Get Id as a result of the creation")
 
-		id := 4 //For testing purposes, to be deleted.
+		id := 501
 		//Add validation and authentification cookies.
 		jwt := backend.GenerateCookieWithJWT(backend.GenerateJWT(id))
 		http.SetCookie(w, &jwt)
