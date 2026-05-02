@@ -131,7 +131,7 @@ input:focus{
     background: rgb(33, 134, 33);
     overflow-y: auto;
     padding: 16px 0;
-    max-width: 260px;
+    width: 260px;
 }
 
 .main {
@@ -210,6 +210,15 @@ input:focus{
     height: 100%;
 }
 
+.sheet-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1a202c;
+    align-self: flex;
+    text-decoration: underline;
+}
+
 .sheet-card {
     background: white;
     border: 1.5px solid white;
@@ -225,6 +234,7 @@ input:focus{
     font-size: 18px;
     font-family: 'Lora', serif;
     letter-spacing: 0.01em;
+    text-align: center;
 }
 
 /* ── Comments panel ── */

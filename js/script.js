@@ -44,6 +44,8 @@ let currentSheet = null;
 
 function loadSheet(name) {
     currentSheet = name;
+    document.getElementById('sheet-title').textContent = name;
+    
     const content = document.getElementById('sheet-display');
     const sheet = sheetData[name];
 
@@ -100,6 +102,46 @@ function handleCommentInput(event) {
     input.value = '';
     addCommentVisible = false;
     document.getElementById('adding-comment').style.display = 'none';
+}
+
+function handleSearch(event) {
+    const query = event.target.value.trim().toLowerCase();
+
+    document.querySelectorAll('.folder-item').forEach(folder => {
+        const folderName = folder.querySelector('.folder-header span:last-child').textContent.toLowerCase();
+        const sheets = folder.querySelectorAll('.sheet-link');
+
+        let anySheetMatches = false;
+
+        sheets.forEach(sheet => {
+            const sheetName = sheet.textContent.toLowerCase();
+            const matches = sheetName.includes(query) || folderName.includes(query);
+            sheet.style.display = matches ? 'block' : 'none';
+            if (matches) anySheetMatches = true;
+        });
+
+        // Show the folder if its name matches or any of its sheets match
+        const folderMatches = folderName.includes(query) || anySheetMatches;
+        folder.style.display = folderMatches ? 'block' : 'none';
+
+        // Auto-expand folder if a sheet inside it matches
+        if (anySheetMatches && query !== '') {
+            folder.classList.remove('folder-collapsed');
+            folder.querySelector('.folder-toggle').textContent = '−';
+        }
+    });
+
+    // If search is cleared, restore everything
+    if (query === '') restoreSidebar();
+}
+
+function restoreSidebar() {
+    document.querySelectorAll('.folder-item').forEach(folder => {
+        folder.style.display = 'block';
+        folder.querySelectorAll('.sheet-link').forEach(sheet => {
+            sheet.style.display = 'block';
+        });
+    });
 }
 
 const sheetComments = {
