@@ -3,13 +3,14 @@ module NoteShareEFREI
 go 1.26.2
 
 require (
-	github.com/go-sql-driver/mysql v1.9.0
 	github.com/dlclark/regexp2/v2 v2.0.0-beta.2
+	github.com/go-sql-driver/mysql v1.9.0
 	github.com/lestrrat-go/jwx/v4 v4.0.0
 	golang.org/x/crypto v0.50.0
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/lestrrat-go/dsig v1.3.0 // indirect
 	github.com/lestrrat-go/option/v3 v3.0.0-alpha1 // indirect

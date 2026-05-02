@@ -2,18 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>StudySheet - Home</title>
+    <title>NoteShare - Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
     <script>
         addsheetmode = false;
         function toggle_add_sheet_mode(){
             addsheetmode = !addsheetmode;
-            if (addsheetmode){
-                document.getElementById("view").hidden = addsheetmode;
-                document.getElementById("studysheetuploadform").hidden = !addsheetmode;
-            } else {
-                document.getElementById("view").hidden = addsheetmode;
-                document.getElementById("studysheetuploadform").hidden = !addsheetmode;
-            }
+            document.getElementById("studysheetuploadform").hidden = !addsheetmode;
         } 
         function doSubmit(){
             if (confirm("Validate the submission of the study sheet:")){
@@ -24,40 +20,108 @@
         }
     </script>
 </head>
+
 <body>
 
-    <!-- Top Section -->
-    <div>
-        <h2 class="title">Home page</h2>
+<header class="topbar">
+
+    <h2 class="logo">NoteShare</h2>
+
+    <form action="/home" method="get" class="search">
+        <input
+            class="search-input"
+            name="q"
+            type="text"
+            value="{{.Query}}"
+            placeholder="Search a category or a study sheet"
+        >
+    </form>
+
+    <nav class="nav">
+        <a href="/account">Account</a>
+        <a href="/login">Log in</a>
+    </nav>
+
+</header>
+
+
+<main class="main">
+
+
+    <section class="section">
         
-        <!-- Account Button -->
-        <div>
-            <button>i</button>
+
+        <h3 class="section-title">Categories</h3>
+
+        <div class="categories">
+
+            <a href="/home?category=maths" class="card">
+                <strong>Maths</strong>
+                <p>Calculus, Linear Algebra ...</p>
+            </a>
+
+            <a href="/home?category=physics" class="card">
+                <strong>Physics</strong>
+                <p>Digital system, transmitions channel ...</p>
+            </a>
+
+            <a href="/home?category=programming" class="card">
+                <strong>Programming</strong>
+                <p>Python, C, Cloud Computing, Sustainable Digital</p>
+            </a>
+
+            <a href="/home?category=formation_generale" class="card">
+                <strong>Formation_generale</strong>
+                <p>Communication, Anglais</p>
+            </a>
         </div>
-    </div>
+    </section>
 
-    <hr>
+    <section class="section">
 
-    <!-- Main Content -->
-    <div>
-        <h1>Welcome to StudySheet !</h1>
-        <p>The green way to create and share study sheets</p>
+        <h3 class="section-title">Search results</h3>
 
-        <!-- Action Buttons -->
-        <div>
-            <span id="create">
+        <div class="results">
+
+            {{range .Results}}
+            <article class="result-card">
+                <h4>{{.Title}}</h4>
+                <p class="category">{{.Category}}</p>
+                <p>{{.Description}}</p>
+            </article>
+            {{else}}
+            <div class="empty">
+                No study sheet matches your search.
+            </div>
+            {{end}}
+    </section>
+
+    <section class="section">
+
+        <div class="section-header">
+            <h3 class="section-title">Study Sheet Creation</h3>
+
+            <div class="actions">
                 <button onclick="toggle_add_sheet_mode()">Create study Sheet</button>
-                <form id="studysheetuploadform" action="createsheet" method="POST" enctype="multipart/form-data" onsubmit="doSubmit()" hidden>
+
+                <form id="studysheetuploadform"
+                      action="createsheet"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      onsubmit="doSubmit()"
+                      hidden>
+
                     <label for="studysheet">Upload a studysheet:</label>
-                    <input type="file" id="studysheet" name="studysheet" accept="application/pdf, text/plain"/>
+                    <input type="file" id="studysheet" name="studysheet"
+                           accept="application/pdf, text/plain"/>
+
+                    <br>
                     <button type="submit">Submit studysheet</button>
                 </form>
-            </span>
-            <span id="view">
-                <button>View study Sheet</button>
-            </span>
+            </div>
         </div>
-    </div>
+
+</main>
 
 </body>
 </html>

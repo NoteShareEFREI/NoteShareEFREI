@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	// Database Setup
+	//Database Setup
 	var err error
 
 	database.Db, err = database.ConnectToDBTcp()
