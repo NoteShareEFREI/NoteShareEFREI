@@ -1,33 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NoteShare - Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h2 class="logo">NoteShare</h2>
+    <nav class="nav" style="margin-left: auto;">
+        <a href="/">Home</a>
+    </nav>
+</header>
+
+<main class="main">
 
 <div class="insert_in_page">
-    <p style="text-align: center;">Create account</p>
+    <p style="text-align: center;">Create Account</p>
 
     <form action="{{.Actionurl}}" method="post" autocomplete="off">
-        <input name="name" required type="text" placeholder="Enter username" size="40"/><br>
-        <input name="pwd" required type="password" placeholder="Enter Password" minlength="8" maxlength="32" size="40" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\|:\{\}£¬_+#\[\]^\(~\)\-])(?=.*[^`'.;,\\])[A-Za-z\d@#$!\[\]%*^?&\|\(~\):\{\}£¬_+\-]{8,31}" />
-        <div>
-            <button type="button" onclick="toggle_pwd_info()" class="invisible">🛈</button>
+        <input name="name" required type="text" placeholder="Enter username" />
 
-            %s
-            <!-- PWD INFO ->
-             <p>
+        <input name="pwd" required type="password" placeholder="Enter Password" minlength="8" maxlength="32" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\|:\{\}£¬_+#\[\]^\(~\)\-])(?=.*[^`'.;,\\])[A-Za-z\d@#$!\[\]%*^?&\|\(~\):\{\}£¬_+\-]{8,31}" />
+
+        <button type="button" onclick="const toggle = document.getElementById('toggle'); toggle.hidden = !toggle.hidden;" class="invisible">🛈 Password requirements</button>
+
+        <div id="toggle" hidden>
+            <p>
                 The password must be at least 8 characters long.<br>
-                The password must be less than 64 characters long.<br>
+                The password must be less than 32 characters long.<br>
                 The password must contain at least one non-alphanumeric character (special characters), excluding dangerous ones (,;"\'`) <br>
                 The password must contain at least one lower case letter.<br>
                 The password must contain at least one upper case letter.
-             </p>
-             <!- Maybe add a checker box if it's validated or not later on.-->
+            </p>
         </div>
-        <input name="mail" type="email" placeholder="Enter your email address" size="40" inputmode="email"/><br>
-        <input name="phone" type="tel" placeholder="+xxx xx xx xx xx xx" size="40" inputmode="tel"/><br>
-        
-        <button> Create an account </button>
+
+        <input name="mail" type="email" placeholder="Enter your email address" inputmode="email" />
+        <input name="phone" type="tel" placeholder="Phone number (optional)" inputmode="tel" />
+
+        <button type="submit">Create Account</button>
     </form>
+
     {{.Eventual_error_display}}
-    <!-- Error information to be added-->
 
     <br>
 
-    <a href="log_in"> Already have an account?<br>Click here to log in!</a>
+    <a href="/login">Already have an account?<br>Click here to log in!</a>
 </div>
+
+</main>
+
+</body>
+</html>
+

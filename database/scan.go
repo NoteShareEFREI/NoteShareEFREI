@@ -21,7 +21,7 @@ func Onerowint(row *sql.Rows) (int, error) {
 }
 
 func Getidfrompseudoandhash(pseudo string, hash string) (int, error) {
-	rows, err := Db.Query("Select ID_Account from Account where Pseudo=? and HashPassword=?", pseudo, hash)
+	rows, err := Db.Query("Select Id_Account from Account where Pseudo=? and HashPassword=?", pseudo, hash)
 	if err != nil {
 		return -1, err
 	}

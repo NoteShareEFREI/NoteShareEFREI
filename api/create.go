@@ -5,16 +5,42 @@ import (
 	"NoteShareEFREI/database"
 	"fmt"
 	"net/http"
-
-	regexp2 "github.com/dlclark/regexp2/v2"
+	"unicode/utf8"
 )
 
-var re *regexp2.Regexp
+func isAllowedSpecial(c rune) bool {
+	switch c {
+	case '@', '$', '!', '%', '*', '?', '&', '|', ':',
+		'{', '}', '£', '¬', '_', '+', '#', '[', ']', '^', '(',
+		')', '-', '~':
+		return true
+	}
+	return false
+}
 
-func Initialize() {
-	//Here the original go package (regexp) does not support positive lookahead so i need to use another package.
-	re = regexp2.MustCompile(`(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\|:\{\}£¬_+#\[\]^\(~\)\-])(?=.*[^'.;,\\])[A-Za-z\d@#$!\[\]%*^?&\|\(~\):\{\}£¬_+\-]{8,31}`)
-	//Stops from recompiling everytime (3-5 seconds)
+func ValidatePassword(pw string) bool {
+	if utf8.RuneCountInString(pw) < 8 || utf8.RuneCountInString(pw) > 31 {
+		return false
+	}
+
+	var hasLower, hasUpper, hasDigit, hasSpecial bool
+
+	for _, c := range pw {
+		switch {
+		case c >= 'a' && c <= 'z':
+			hasLower = true
+		case c >= 'A' && c <= 'Z':
+			hasUpper = true
+		case c >= '0' && c <= '9':
+			hasDigit = true
+		case isAllowedSpecial(c):
+			hasSpecial = true
+		case c == '\'' || c == '.' || c == ',' || c == ';' || c == '\\':
+			return false
+		}
+	}
+
+	return hasLower && hasUpper && hasDigit && hasSpecial
 }
 
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,8 +48,11 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	err := r.ParseForm()
 	if err != nil {
-		Addredirect(w, "signup", http.StatusBadRequest) //400
-		fmt.Print(err.Error())
+		err := Addredirect(w, "signup", http.StatusBadRequest)
+		if err != nil {
+			fmt.Print(err.Error())
+			return
+		} //400
 		return
 	}
 
@@ -35,21 +64,24 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		email := r.Form.Get("mail")
 		Phone := r.Form.Get("phone")
 
-		isMatch, err := re.MatchString(hash) //May take some time to run.
-		if err != nil {
-			fmt.Println(err.Error() + "\n Error in api.login, POST request.")
-			isMatch = false
-		}
+		isMatch := ValidatePassword(hash)
+
 		if isMatch == false {
 			//If an hacker tried to bypass the regex on the page and send an unsecure password.
-			Addredirect(w, "signup", http.StatusBadRequest) //400
+			err := Addredirect(w, "signup", http.StatusBadRequest)
+			if err != nil {
+				return
+			} //400
 			return
 		}
 
 		//Hash the password to not store it plain.
-		hash, salt, err := backend.NewHash(hash, name)
+		hash, salt, err := backend.NewHash(hash)
 		if err != nil {
-			Addredirect(w, "signup", http.StatusInternalServerError)
+			err := Addredirect(w, "signup", http.StatusInternalServerError)
+			if err != nil {
+				return
+			}
 			return
 		}
 
@@ -64,7 +96,10 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 			i++
 			if i == 5 { // && err != nil (implicit, already verified)
 				//Even after retrying multiple times, we couldn't store the info in the database.
-				Addredirect(w, "signup", http.StatusInternalServerError)
+				err := Addredirect(w, "signup", http.StatusInternalServerError)
+				if err != nil {
+					return
+				}
 				return
 			}
 		}
@@ -72,7 +107,10 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		//Get the Account ID of the created account
 		id, err := database.Getidfrompseudoandhash(name, hash)
 		if err != nil {
-			Addredirect(w, "signup", http.StatusInternalServerError)
+			err := Addredirect(w, "signup", http.StatusInternalServerError)
+			if err != nil {
+				return
+			}
 			return
 		}
 
@@ -80,11 +118,20 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		jwt := backend.GenerateCookieWithJWT(backend.GenerateJWT(id))
 		http.SetCookie(w, &jwt)
 
-		Addredirect(w, "home", http.StatusSeeOther)
+		err = Addredirect(w, "home", http.StatusSeeOther)
+		if err != nil {
+			return
+		}
 
 	default:
-		Addredirect(w, "create", http.StatusNotFound)
-		w.Write([]byte(`{"message": "not found"}`))
+		err := Addredirect(w, "create", http.StatusNotFound)
+		if err != nil {
+			return
+		}
+		_, err = w.Write([]byte(`{"message": "not found"}`))
+		if err != nil {
+			return
+		}
 	}
 
 }

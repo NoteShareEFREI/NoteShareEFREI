@@ -11,7 +11,7 @@ import (
 func simpleAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//Checking the token
-		token, err := jwt.ParseRequest(r, jwt.WithCookieKey("__Host-Http-Jwt"))
+		token, err := jwt.ParseRequest(r, jwt.WithCookieKey("Http-Jwt"))
 		if err != nil {
 			//Invalid token or missing.
 			w.Header().Set("WWW-Authenticate", `Bearer realm="User-restriction"`)
@@ -45,7 +45,7 @@ func Accountmiddleware(next http.Handler) http.Handler {
 	//Depending on if the user is connected or not the page served will be different for the user.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//Checking the token
-		token, err := jwt.ParseRequest(r, jwt.WithCookieKey("__Host-Http-Jwt"), jwt.WithVerify(false))
+		token, err := jwt.ParseRequest(r, jwt.WithCookieKey("Http-Jwt"), jwt.WithVerify(false))
 		if err != nil {
 			fmt.Println(err.Error())
 			r = r.WithContext(context.WithValue(

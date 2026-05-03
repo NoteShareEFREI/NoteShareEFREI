@@ -31,9 +31,15 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		Phone:    "None",
 	}
 
-	row, err := database.Db.Query("Select PSEUDO, Email, Phonenumber from Account where ID_Account=?", acc_ID)
+	row, err := database.Db.Query("Select Pseudo, Email, Phonenumber from Account where Id_Account=?", acc_ID)
+	if err != nil {
+		return
+	}
 	if row.Next() {
-		row.Scan(&data.Username, &data.Mail, &data.Phone)
+		err := row.Scan(&data.Username, &data.Mail, &data.Phone)
+		if err != nil {
+			return
+		}
 	} else {
 		fmt.Println("Error fetching information for user account id:", acc_ID, "No rows were returned.")
 	}

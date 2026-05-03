@@ -23,7 +23,7 @@ func Newaccount(name string, email string, hash string, Phone string, salt int) 
 	}
 	if email == "" {
 		query =
-			`Insert into Account (Pseudo, HashPassword, Phone, salt, Role) values 
+			`Insert into Account (Pseudo, HashPassword, Phonenumber, salt, Role) values 
 		(?, ?, ?, ?, 1)`
 		return Db.Exec(query, name, hash, Phone, salt)
 	}

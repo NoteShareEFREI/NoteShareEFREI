@@ -30,7 +30,6 @@ func main() {
 
 	//Initialize the global values.
 	backend.Setup()
-	api.Initialize()
 
 	//Global http requests
 	http.Handle("/favicon.ico", http.NotFoundHandler())

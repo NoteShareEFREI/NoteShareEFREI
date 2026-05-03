@@ -74,11 +74,11 @@ func ValidateJWT(token jwt.Token) (int, error) {
 
 func GenerateCookieWithJWT(JWT []byte) http.Cookie {
 	jwtcookie := http.Cookie{
-		Name:  "__Host-Http-Jwt",
+		Name:  "Http-Jwt",
 		Value: string(JWT),
 
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
 		MaxAge:   86400, //Equals 1 day in seconds.

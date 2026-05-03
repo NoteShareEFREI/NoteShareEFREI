@@ -10,7 +10,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	err := r.ParseForm()
 	if err != nil {
-		Addredirect(w, "login", http.StatusBadRequest) //400
+		err := Addredirect(w, "login", http.StatusBadRequest)
+		if err != nil {
+			return
+		} //400
 		fmt.Print(err.Error())
 		return
 	}
@@ -20,15 +23,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		hash := r.Form.Get("pwd")
 		name := r.Form.Get("name")
-
-		//The regex checking was removed since it is too costly and can take up to a minute.
+		fmt.Print(hash)
+		fmt.Print(name)
 
 		correct, id := backend.VerifyPerson(hash, name)
 		if !correct {
-			Addredirect(w, "login", http.StatusForbidden) //403
 			if id != -1 {
 				fmt.Println("The `backend.VerifyPerson` function returned with an error of code, code =", id)
 			}
+			err := Addredirect(w, "login", http.StatusForbidden)
+			if err != nil {
+				return
+			} //403
 			return
 		}
 
@@ -36,11 +42,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		jwt := backend.GenerateCookieWithJWT(backend.GenerateJWT(id))
 		http.SetCookie(w, &jwt)
 
-		Addredirect(w, "home", http.StatusSeeOther) //303
+		err := Addredirect(w, "home", http.StatusSeeOther)
+		if err != nil {
+			return
+		} //303
 
 	default:
-		Addredirect(w, "login", http.StatusNotFound) //404
-		w.Write([]byte(`{"message": "not found"}`))
+		err := Addredirect(w, "login", http.StatusNotFound)
+		if err != nil {
+			return
+		} //404
+		_, err = w.Write([]byte(`{"message": "not found"}`))
+		if err != nil {
+			return
+		}
 	}
 
 }
