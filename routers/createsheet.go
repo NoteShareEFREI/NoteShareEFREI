@@ -124,7 +124,7 @@ func CreateSheetHandler(w http.ResponseWriter, r *http.Request) {
 			problemwithsheet(w, r)
 			return
 		}
-		err := newfile.Close()
+		err = newfile.Close()
 		if err != nil {
 			return
 		}
@@ -158,7 +158,7 @@ func CreateSheetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func problemwithsheet(w http.ResponseWriter) {
+func problemwithsheet(w http.ResponseWriter, r *http.Request) {
 	pagePath := "templates/createsheetfailed"
 	p, err := os.ReadFile(pagePath)
 	if err != nil {

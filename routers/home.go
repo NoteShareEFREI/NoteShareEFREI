@@ -16,6 +16,8 @@ type studySheet struct {
 	Title       string
 	Category    string
 	Description string
+	Hash        string
+	SubCategory string
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +118,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Query actual study sheets from database
 	sqlQuery := `
-		SELECT StudySheet.Name, Category.Name AS CatName, SubCategory.Name AS SubName
+		SELECT StudySheet.Name, Category.Name AS CatName, SubCategory.Name AS SubName, StudySheet.Hash
 		FROM StudySheet
 		INNER JOIN SubCategory ON StudySheet.Id_SubCategory = SubCategory.Id_SubCategory
 		INNER JOIN Category ON SubCategory.Id_Category = Category.Id_Category
@@ -133,8 +135,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	results := make([]studySheet, 0)
 	for rows.Next() {
-		var name, catName, subName string
-		err = rows.Scan(&name, &catName, &subName)
+		var name, catName, subName, hash string
+		err = rows.Scan(&name, &catName, &subName, &hash)
 		if err != nil {
 			http.Error(w, "Failed to scan study sheet", http.StatusInternalServerError)
 			return
@@ -143,6 +145,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			Title:       name,
 			Category:    catName,
 			Description: subName,
+			Hash:        hash,
+			SubCategory: subName,
 		})
 	}
 
