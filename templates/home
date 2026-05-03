@@ -28,7 +28,7 @@
 
     <!-- Top Section -->
     <div>
-        <h2>Home page</h2>
+        <h2 class="title">Home page</h2>
         
         <!-- Account Button -->
         <div>

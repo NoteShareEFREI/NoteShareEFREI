@@ -7,7 +7,7 @@ import (
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	page_path := "templates/home" //r.URL.Path[len("/templates/"):]
+	page_path := "templates/home"
 	p, err := os.ReadFile(page_path)
 	if err != nil {
 		fmt.Print("Error reading home")
