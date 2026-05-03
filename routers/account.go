@@ -2,6 +2,7 @@ package routers
 
 import (
 	"NoteShareEFREI/database"
+	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -36,9 +37,17 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if row.Next() {
-		err := row.Scan(&data.Username, &data.Mail, &data.Phone)
+		var mail sql.NullString
+		var phone sql.NullString
+		err := row.Scan(&data.Username, &mail, &phone)
 		if err != nil {
 			return
+		}
+		if mail.Valid {
+			data.Mail = mail.String
+		}
+		if phone.Valid {
+			data.Phone = phone.String
 		}
 	} else {
 		fmt.Println("Error fetching information for user account id:", acc_ID, "No rows were returned.")

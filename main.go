@@ -41,6 +41,7 @@ func main() {
 	http.HandleFunc("/createsheet", routers.CreateSheetHandler)
 	http.HandleFunc("/login", routers.LoginHandler)
 	http.HandleFunc("/signup", routers.CreateHandler)
+	http.HandleFunc("/logout", routers.LogoutHandler)
 	http.Handle("/account", backend.Accountmiddleware(http.HandlerFunc(routers.AccountHandler)))
 
 	//API end points (http responses with no html)

@@ -43,13 +43,10 @@ func VerifyPerson(password string, name string) (bool, int) {
 		//It is done this way so that multiple people can have the same name and that we do not give any information to the client through errors.
 		err := rows.Scan(&pwd, &salt)
 		if err == nil { // If there are no errors, continue.
-			hash, err := HashPassword(password, salt)
-			if err == nil {
-				if VerifyPassword(pwd, hash) {
-					id, err := database.Getidfrompseudoandhash(name, pwd)
-					if err == nil {
-						return true, id
-					}
+			if VerifyPassword(password, pwd) {
+				id, err := database.Getidfrompseudoandhash(name, pwd)
+				if err == nil {
+					return true, id
 				}
 			}
 		}
