@@ -33,3 +33,15 @@ func Newaccount(name string, email string, hash string, Phone string, salt int) 
 	(?, ?, ?, ?, ?, 1)`
 	return Db.Exec(query, name, email, hash, Phone, salt)
 }
+
+func Newstudysheet(id int, hash string, name string, id_sub int, id_acc int) (sql.Result, error) {
+	return Db.Exec("INSERT INTO StudySheet (Id_Sheet, Hash, Name, Id_SubCategory, Id_Account) VALUES (?, ?, ?, ?, ?)", id, hash, name, id_sub, id_acc)
+}
+
+func InsertCategory(id int, name string) (sql.Result, error) {
+	return Db.Exec("INSERT IGNORE INTO Category (Id_Category, Name) VALUES (?, ?)", id, name)
+}
+
+func InsertSubCategory(id int, name string, catId int) (sql.Result, error) {
+	return Db.Exec("INSERT IGNORE INTO SubCategory (Id_SubCategory, Name, Id_Category) VALUES (?, ?, ?)", id, name, catId)
+}

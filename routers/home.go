@@ -1,33 +1,21 @@
 package routers
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"strings"
+
+	"NoteShareEFREI/backend"
+	"NoteShareEFREI/database"
+
+	"github.com/lestrrat-go/jwx/v4/jwt"
 )
 
 type studySheet struct {
 	Title       string
 	Category    string
 	Description string
-}
-
-var homeStudySheets = []studySheet{
-	{
-		Title:"Linear Algebra",
-		Category:"maths",
-		Description:"Matrix, Euler",
-	},
-	{
-		Title: "Calculus",
-		Category:    "maths",
-		Description: "Integrals",
-	},
-	{
-		Title:"Data Structures in C",
-		Category: "programming",
-		Description: "Arrays, linked lists...",
-	},
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,34 +26,142 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check authentication
+	token, err := jwt.ParseRequest(r, jwt.WithCookieKey("Http-Jwt"), jwt.WithVerify(false))
+	isLoggedIn := false
+	if err == nil {
+		_, err = backend.ValidateJWT(token)
+		if err == nil {
+			isLoggedIn = true
+		}
+	}
+
+	// Fetch categories and subcategories
+	cats, err := database.GetCategories()
+	if err != nil {
+		http.Error(w, "Failed to load categories", http.StatusInternalServerError)
+		return
+	}
+	subs, err := database.GetSubCategories()
+	if err != nil {
+		http.Error(w, "Failed to load subcategories", http.StatusInternalServerError)
+		return
+	}
+	// If no subcategories, insert initial data
+	if len(subs) == 0 {
+		// Insert categories
+		_, err = database.InsertCategory(1, "Maths")
+		if err != nil {
+			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
+			return
+		}
+		_, err = database.InsertCategory(2, "Physics")
+		if err != nil {
+			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
+			return
+		}
+		_, err = database.InsertCategory(3, "Programming")
+		if err != nil {
+			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
+			return
+		}
+		_, err = database.InsertCategory(4, "Formation_Generale")
+		if err != nil {
+			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
+			return
+		}
+		// Insert subcategories
+		subsData := []struct {
+			id   int
+			name string
+			cat  int
+		}{
+			{1, "Calculus", 1},
+			{2, "LinearAlgebra", 1},
+			{3, "DigitalSystems", 2},
+			{4, "SignalProcessing", 2},
+			{5, "TransmissionSystems", 2},
+			{6, "C", 3},
+			{7, "Python", 3},
+			{8, "java1", 3},
+			{9, "java2", 3},
+			{10, "sustainabledigital", 3},
+			{11, "Anglais", 4},
+			{12, "Communication", 4},
+		}
+		for _, s := range subsData {
+			_, err = database.InsertSubCategory(s.id, s.name, s.cat)
+			if err != nil {
+				http.Error(w, "Failed to insert subcategory", http.StatusInternalServerError)
+				return
+			}
+		}
+		// Refetch after insert
+		cats, err = database.GetCategories()
+		if err != nil {
+			http.Error(w, "Failed to load categories", http.StatusInternalServerError)
+			return
+		}
+		subs, err = database.GetSubCategories()
+		if err != nil {
+			http.Error(w, "Failed to load subcategories", http.StatusInternalServerError)
+			return
+		}
+	}
+	subCatsJSON, _ := json.Marshal(subs)
+
 	query := strings.TrimSpace(r.URL.Query().Get("q"))
 	selectedCategory := strings.TrimSpace(strings.ToLower(r.URL.Query().Get("category")))
 	normalizedQuery := strings.ToLower(query)
 
-	results := make([]studySheet, 0, len(homeStudySheets))
-	for _, sheet := range homeStudySheets {
-		if selectedCategory != "" && selectedCategory != strings.ToLower(sheet.Category) {
-			continue
+	// Query actual study sheets from database
+	sqlQuery := `
+		SELECT StudySheet.Name, Category.Name AS CatName, SubCategory.Name AS SubName
+		FROM StudySheet
+		INNER JOIN SubCategory ON StudySheet.Id_SubCategory = SubCategory.Id_SubCategory
+		INNER JOIN Category ON SubCategory.Id_Category = Category.Id_Category
+		WHERE (? = '' OR LOWER(Category.Name) LIKE ? OR LOWER(SubCategory.Name) LIKE ? OR LOWER(StudySheet.Name) LIKE ?)
+		AND (? = '' OR LOWER(Category.Name) = ?)
+	`
+	likeQuery := "%" + normalizedQuery + "%"
+	rows, err := database.Db.Query(sqlQuery, query, likeQuery, likeQuery, likeQuery, selectedCategory, selectedCategory)
+	if err != nil {
+		http.Error(w, "Failed to query study sheets", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	results := make([]studySheet, 0)
+	for rows.Next() {
+		var name, catName, subName string
+		err = rows.Scan(&name, &catName, &subName)
+		if err != nil {
+			http.Error(w, "Failed to scan study sheet", http.StatusInternalServerError)
+			return
 		}
-		if normalizedQuery != "" {
-			if !strings.Contains(strings.ToLower(sheet.Title), normalizedQuery) &&
-				!strings.Contains(strings.ToLower(sheet.Description), normalizedQuery) &&
-				!strings.Contains(strings.ToLower(sheet.Category), normalizedQuery) {
-				continue}
-		}
-		results = append(results, sheet)
+		results = append(results, studySheet{
+			Title:       name,
+			Category:    catName,
+			Description: subName,
+		})
 	}
 
 	data := struct {
-		Query string
-		SelectedCategory string
-		Results []studySheet
-		HasFilters bool
+		Query             string
+		SelectedCategory  string
+		Results           []studySheet
+		HasFilters        bool
+		IsLoggedIn        bool
+		Categories        []database.Category
+		SubCategoriesJSON string
 	}{
-		Query: query,
-		SelectedCategory: selectedCategory,
-		Results:  results,
-		HasFilters: query != "" || selectedCategory != "",
+		Query:             query,
+		SelectedCategory:  selectedCategory,
+		Results:           results,
+		HasFilters:        query != "" || selectedCategory != "",
+		IsLoggedIn:        isLoggedIn,
+		Categories:        cats,
+		SubCategoriesJSON: string(subCatsJSON),
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -74,4 +170,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to render home page", http.StatusInternalServerError)
 		return
 	}
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := http.Cookie{
+		Name:     "Http-Jwt",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
