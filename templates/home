@@ -2,9 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NoteShare - Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/styles.css">
+    <script>
+        addsheetmode = false;
+        function toggle_add_sheet_mode(){
+            addsheetmode = !addsheetmode;
+            document.getElementById("studysheetuploadform").hidden = !addsheetmode;
+        } 
+        function doSubmit(){
+            if (confirm("Validate the submission of the study sheet:")){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -35,6 +49,8 @@
 
 
     <section class="section">
+        
+
         <h3 class="section-title">Categories</h3>
 
         <div class="categories">
@@ -78,10 +94,32 @@
                 No study sheet matches your search.
             </div>
             {{end}}
-
-        </div>
-
     </section>
+
+    <section class="section">
+
+        <div class="section-header">
+            <h3 class="section-title">Study Sheet Creation</h3>
+
+            <div class="actions">
+                <button onclick="toggle_add_sheet_mode()">Create study Sheet</button>
+
+                <form id="studysheetuploadform"
+                      action="createsheet"
+                      method="POST"
+                      enctype="multipart/form-data"
+                      onsubmit="doSubmit()"
+                      hidden>
+
+                    <label for="studysheet">Upload a studysheet:</label>
+                    <input type="file" id="studysheet" name="studysheet"
+                           accept="application/pdf, text/plain"/>
+
+                    <br>
+                    <button type="submit">Submit studysheet</button>
+                </form>
+            </div>
+        </div>
 
 </main>
 

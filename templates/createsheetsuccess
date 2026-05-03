@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StudySheet - sheet submitted</title>
+</head>
+<body>
+
+    <!-- Top Section -->
+    <div>
+        <h2>Submission page</h2>
+        
+        <!-- Account Button -->
+        <div>
+            <button>i</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Main Content -->
+    <div>
+        <h1>Thanks for uploading a StudySheet !</h1>
+
+        <!-- Action Buttons -->
+        <div>
+                <button onclick="location.replace('home')">Back to home page</button>
+        </div>
+    </div>
+
+</body>
+</html>

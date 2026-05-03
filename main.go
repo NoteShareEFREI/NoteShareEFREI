@@ -12,9 +12,10 @@ import (
 )
 
 func main() {
+	//Database Setup
 	var err error
 
-	database.Db, err = database.Connecttest()
+	database.Db, err = database.ConnectToDBTcp()
 	if err != nil {
 		println(err.Error())
 		return
@@ -23,7 +24,6 @@ func main() {
 
 	err = database.Db.Ping()
 	if err != nil {
-		println("seconderror")
 		println(err.Error())
 		return
 	}
@@ -39,6 +39,7 @@ func main() {
 	//Router end points
 	http.HandleFunc("/", routers.Handler)
 	http.HandleFunc("/home", routers.HomeHandler)
+	http.HandleFunc("/createsheet", routers.CreateSheetHandler)
 	http.HandleFunc("/login", routers.LoginHandler)
 	http.HandleFunc("/signup", routers.CreateHandler)
 	http.Handle("/account", backend.Accountmiddleware(http.HandlerFunc(routers.AccountHandler)))
@@ -47,6 +48,6 @@ func main() {
 	http.HandleFunc("/api/login", api.LoginHandler)
 	http.HandleFunc("/api/signup", api.CreateHandler)
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 	//http.ListenAndServeTLS() //Serve over https (need to create certificate and key with openssl)(Requires 'personal' information and the domain name on which the website is hsoted (FQDN))
 }

@@ -153,3 +153,28 @@ body {
     color: var(--muted);
     padding: 20px;
 }   
+
+.section-header {
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.actions {
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.actions button {
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+.actions form {
+    gap: 6px;
+    align-items: center;
+}
