@@ -3,12 +3,29 @@ package main
 import (
 	"NoteShareEFREI/api"
 	"NoteShareEFREI/backend"
+	"NoteShareEFREI/database"
 	"NoteShareEFREI/routers"
 	"log"
 	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
+	var err error
+
+	database.Db, err = database.ConnectToDBTcp()
+	if err != nil {
+		println(err.Error())
+		return
+	}
+	defer database.Db.Close()
+
+	err = database.Db.Ping()
+	if err != nil {
+		println(err.Error())
+		return
+	}
 
 	//Initialize the JWT private keys.
 	backend.Setup()
