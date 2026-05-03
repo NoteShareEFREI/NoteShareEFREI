@@ -5,7 +5,6 @@ function renderSidebar() {
     Object.entries(folderData).forEach(([folderName, sheets], index) => {
         const isFirst = index === 0;
         const folderId = 'folder' + (index + 1);
-i
         const folderEl = document.createElement('div');
         folderEl.className = 'folder-item' + (isFirst ? '' : ' folder-collapsed');
         folderEl.id = folderId;
