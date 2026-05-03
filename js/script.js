@@ -1,4 +1,30 @@
+function renderSidebar() {
+    const sidebar = document.querySelector('.folders');
+    sidebar.innerHTML = '';
 
+    Object.entries(folderData).forEach(([folderName, sheets], index) => {
+        const isFirst = index === 0;
+        const folderId = 'folder' + (index + 1);
+i
+        const folderEl = document.createElement('div');
+        folderEl.className = 'folder-item' + (isFirst ? '' : ' folder-collapsed');
+        folderEl.id = folderId;
+
+        folderEl.innerHTML = `
+            <div class="folder-header" onclick="toggleFolder('${folderId}')">
+                <span class="folder-toggle">${isFirst ? '−' : '+'}</span>
+                <span>${folderName}</span>
+            </div>
+            <div class="folder-children">
+                ${sheets.map(sheet => `
+                    <span class="sheet-link" onclick="loadSheet('${sheet}')">${sheet}</span>
+                `).join('')}
+            </div>
+        `;
+
+        sidebar.appendChild(folderEl);
+    });
+}
 
 function toggleFolder(id) {
     const el = document.getElementById(id);
@@ -59,7 +85,7 @@ function loadSheet(name) {
         ></iframe>
         `;
     } else {
-        content.innerHTML = '&lt;&lt; Study sheet &gt;&gt;';
+        content.innerHTML = '&lt;&lt;ERROR : PDF of study sheet not found !&gt;&gt;';
     }
     renderComments(name)
 }
@@ -159,3 +185,11 @@ const sheetData = {
     'Study sheet 2': { pdf: 'pdfs/Bee_Movie.pdf' },
     'Study sheet 3': { pdf: 'pdfs/The_Chapel_on_the_Cliffs_v1.0.pdf' },
 };
+
+const folderData = {
+    'Folder1': ['Study sheet 1', 'Study sheet 2', 'Study sheet 3'],
+    'Folder2': ['Sheet A'],
+    'Folder3': ['Sheet B'],
+};
+
+document.addEventListener('DOMContentLoaded', renderSidebar);
