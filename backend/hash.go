@@ -1,6 +1,8 @@
 package backend
 
 import (
+	"NoteShareEFREI/database"
+	"fmt"
 	"math/rand"
 
 	"golang.org/x/crypto/bcrypt"
@@ -21,26 +23,61 @@ func NewHash(password string, name string) (string, int, error) {
 
 // Called when the user logs in
 func VerifyPerson(password string, name string) (bool, int) {
-	panic("Implement a database to attach to first.")
-	/*
-		res := database.Doquery("select pwd,salt from Account where Pseudo=%s")
-		for i := 0; i < res.len; i++ {
-		for true {
-			pwd := res[i][0a]
-			salt := res[i][1]
+	//Query for the infos.
+	//Trying to match the given name with Email and Pseudo fields.
+	query := `
+	select HashPassword,salt from Account where Pseudo=?;
+	select HashPassword,salt from Account where Email=?`
+	rows, err := database.Db.Query(query, name, name)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false, -3 //The sql query did not work.
+	}
+	for rows.Next() { //Cycling through everyone with the same username
+		var (
+			pwd  string
+			salt int
+		)
+		//for every if statement, we ignore errors and continue if there aren't errors.
+		//(We need to check for everyone and obviously there will be time it doens't work.)
+		//We only need the one output when it's valid.
+		//It is done this way so that multiple people can have the same name and that we do not give any information to the client through errors.
+		err := rows.Scan(&pwd, &salt)
+		if err == nil { // If there are no errors, continue.
 			hash, err := HashPassword(password, salt)
-			if err != nil {
-				continue
-			}
-			if VerifyPassword(hash, pwd) {
-				//Need to create a wrapper for the request
-				//id := mysql.getid(pwd)
-				id := database.query("select Accid from Account where pwd=%s", pwd)
-				return true, id
+			if err == nil {
+				if VerifyPassword(pwd, hash) {
+					id, err := database.Getidfrompseudoandhash(name, pwd)
+					if err == nil {
+						return true, id
+					}
+				}
 			}
 		}
-		return false, -1
-	*/
+	}
+	if !rows.NextResultSet() {
+		return false, -2 //There should be 2 result sets (from 2 sql select requests)
+	}
+	for rows.Next() { //Cycling through everyone with the same email
+		var (
+			pwd  string
+			salt int
+		)
+		err := rows.Scan(&pwd, &salt)
+		if err == nil { // If there are no errors, continue.
+			hash, err := HashPassword(password, salt)
+			if err == nil {
+				if VerifyPassword(pwd, hash) {
+					id, err := database.Getidfrompseudoandhash(name, pwd)
+					if err == nil {
+						return true, id
+					}
+				}
+			}
+		}
+	}
+	//Could not find any match.
+	return false, -1
 }
 
 // HashPassword generates a bcrypt hash for the given password and salt.

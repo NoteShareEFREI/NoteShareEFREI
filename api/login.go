@@ -4,14 +4,13 @@ import (
 	"NoteShareEFREI/backend"
 	"fmt"
 	"net/http"
-
-	regexp2 "github.com/dlclark/regexp2/v2"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	err := r.ParseForm()
 	if err != nil {
+		Addredirect(w, "login", http.StatusBadRequest) //400
 		fmt.Print(err.Error())
 		return
 	}
@@ -22,46 +21,35 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		hash := r.Form.Get("pwd")
 		name := r.Form.Get("name")
 
-		//Here the original go package (regexp) does not support positive lookahead so i need to use another package.
-		re := regexp2.MustCompile(`(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\|:\{\}£¬_+#\[\]^\(~\)\-])(?=.*[^'.;,\\])[A-Za-z\d@#$!\[\]%*^?&\|\(~\):\{\}£¬_+\-]{8,31}`)
-		isMatch, err := re.MatchString(hash)
-		if err != nil {
-			panic(err.Error() + "\n Error in api.login, POST request.")
-		}
-		if isMatch == false {
-			//If an hacker tried to bypass the regex on the page and send an unsecure password.
-			w.WriteHeader(http.StatusBadRequest) //400
-			return
-		}
+		//The regex checking was removed since it is too costly and can take up to a minute.
 
-		fmt.Println(name, hash) //To verify informations sent (Debug)
-
-		/*correct, id := backend.VerifyPerson(hash, name) //Needs a database
+		correct, id := backend.VerifyPerson(hash, name)
 		if !correct {
-			w.WriteHeader(http.StatusForbidden) //403
+			Addredirect(w, "login", http.StatusForbidden) //403
+			if id != -1 {
+				fmt.Println("The `backend.VerifyPerson` function returned with an error of code, code =", id)
+			}
 			return
-		}*/
+		}
 
-		//Store the results in the database. For Create Account.
-		//database.Doquery("A query")
-
-		id := 4 //For testing purposes, to be deleted.
 		//Add validation and authentification cookies.
 		jwt := backend.GenerateCookieWithJWT(backend.GenerateJWT(id))
 		http.SetCookie(w, &jwt)
 
-		//Redirect to home page
-		w.Header().Set("Location", "/home")
-		w.Header().Set("Refresh", " 0; url=/home")
-
-		w.WriteHeader(http.StatusSeeOther) //303
+		Addredirect(w, "home", http.StatusSeeOther) //303
 
 	default:
-		w.WriteHeader(http.StatusNotFound) //404
+		Addredirect(w, "login", http.StatusNotFound) //404
 		w.Write([]byte(`{"message": "not found"}`))
 	}
 
-	//To send everyone that makes a request to this page back to home page.
-	meta_redirection := "<meta http-equiv='refresh' content='0;url=/home'>"
-	fmt.Fprintf(w, "%s", meta_redirection)
+}
+
+func Addredirect(w http.ResponseWriter, page string, code int) error {
+	w.Header().Set("Location", "/"+page)
+	w.Header().Set("Refresh", " 0; url=/"+page)
+	w.WriteHeader(code)
+	meta_redirection := fmt.Sprintf("<meta http-equiv='refresh' content='0;url=/%s'>", page)
+	_, err := fmt.Fprintf(w, "%s", meta_redirection)
+	return err
 }

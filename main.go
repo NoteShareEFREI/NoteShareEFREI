@@ -14,7 +14,7 @@ import (
 func main() {
 	var err error
 
-	database.Db, err = database.ConnectToDBTcp()
+	database.Db, err = database.Connecttest()
 	if err != nil {
 		println(err.Error())
 		return
@@ -23,12 +23,14 @@ func main() {
 
 	err = database.Db.Ping()
 	if err != nil {
+		println("seconderror")
 		println(err.Error())
 		return
 	}
 
-	//Initialize the JWT private keys.
+	//Initialize the global values.
 	backend.Setup()
+	api.Initialize()
 
 	//Global http requests
 	http.Handle("/favicon.ico", http.NotFoundHandler())
@@ -45,6 +47,6 @@ func main() {
 	http.HandleFunc("/api/login", api.LoginHandler)
 	http.HandleFunc("/api/signup", api.CreateHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 	//http.ListenAndServeTLS() //Serve over https (need to create certificate and key with openssl)(Requires 'personal' information and the domain name on which the website is hsoted (FQDN))
 }

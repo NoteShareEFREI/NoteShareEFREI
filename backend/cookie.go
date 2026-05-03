@@ -22,11 +22,11 @@ func Setup() {
 	//HS256 is more efficient than RS256.
 	//So we will use the HS256 algorithm even though it is a little less secure to make less calculations.
 	server_info.alg = jwa.HS256()
-	symKey, err := jwk.Import[jwk.SymmetricKey]([]byte("To put a secure string with more than 32 characters!"))
+	symmetricKey, err := jwk.Import[jwk.SymmetricKey]([]byte("To put a secure string with more than 32 characters!"))
 	if err != nil {
 		// handle error
 	}
-	server_info.signKey = symKey
+	server_info.signKey = symmetricKey
 	server_info.verifyKey = server_info.signKey
 }
 
@@ -67,7 +67,7 @@ func ValidateJWT(token jwt.Token) (int, error) {
 		//Error is handled outside
 		return 0, err
 	}
-	fmt.Println("account id in float 64 : ", account_id, int(account_id))
+	//fmt.Println("account id in float 64 : ", account_id, int(account_id))
 
 	return int(account_id), nil
 }

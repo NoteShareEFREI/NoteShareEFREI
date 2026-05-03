@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"NoteShareEFREI/database"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -30,7 +31,12 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		Phone:    "None",
 	}
 
-	//database.Doquery("hello world") // And put the results in data
+	row, err := database.Db.Query("Select PSEUDO, Email, Phonenumber from Account where ID_Account=?", acc_ID)
+	if row.Next() {
+		row.Scan(&data.Username, &data.Mail, &data.Phone)
+	} else {
+		fmt.Println("Error fetching information for user account id:", acc_ID, "No rows were returned.")
+	}
 
 	// Need To put the page inside another template
 

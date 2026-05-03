@@ -1,23 +1,24 @@
--- CREATE DATABASE NoteShareEFREI;
+CREATE DATABASE if not exists NoteShareEFREI;
 USE NoteShareEFREI;
 
-CREATE TABLE Account(
-   Id_Account INT,
+CREATE TABLE if not exists Account(
+   Id_Account INT auto_increment,
    Pseudo VARCHAR(50),
    Email VARCHAR(50),
    HashPassword VARCHAR(257),
    Phonenumber VARCHAR(15),
+   salt Int,
    Role BOOLEAN, -- 0 for admin, 1 for user
    PRIMARY KEY(Id_Account)
 );
 
-CREATE TABLE Category(
+CREATE TABLE if not exists Category(
    Id_Category INT,
    Name VARCHAR(50),
    PRIMARY KEY(Id_Category)
 );
 
-CREATE TABLE SubCategory(
+CREATE TABLE if not exists SubCategory(
    Id_SubCategory INT,
    Name VARCHAR(50),
    Id_Category INT NOT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE SubCategory(
    FOREIGN KEY(Id_Category) REFERENCES Category(Id_Category)
 );
 
-CREATE TABLE StudySheet(
+CREATE TABLE if not exists StudySheet(
    Id_Sheet INT,
    Hash VARCHAR(257),
    Name VARCHAR(50),
@@ -36,7 +37,7 @@ CREATE TABLE StudySheet(
    FOREIGN KEY(Id_Account) REFERENCES Account(Id_Account)
 );
 
-CREATE TABLE Comment(
+CREATE TABLE if not exists Comment(
    Id_Comment INT,
    Content VARCHAR(1000),
    Id_Sheet INT NOT NULL,
