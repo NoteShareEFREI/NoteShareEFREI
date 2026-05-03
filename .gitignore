@@ -34,3 +34,4 @@ go.work.sum
 NoteShareEFREI
 go-app.env
 db.env
+go.sum

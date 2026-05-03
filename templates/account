@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NoteShare - Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h2 class="logo">NoteShare</h2>
+    <nav class="nav" style="margin-left: auto;">
+        <a href="/">Home</a>
+    </nav>
+</header>
+
+<main class="main">
+    <div class="insert_in_page">
+        <h1>Welcome {{.Username}}, what would you like to do here?</h1>
+
+        <h3>Account Information</h3>
+        <p>Username: {{.Username}}</p>
+        <p>Email: {{.Mail}}</p>
+        <p>Phone number: {{.Phone}}</p>
+
+        <h3>Account Description</h3>
+
+        <h3>Others</h3>
+        <button>Delete the account</button>
+        <p>Be careful, this change is permanent and cannot be undone.</p>
+    </div>
+</main>
+
+</body>
+</html>
+

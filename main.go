@@ -1,14 +1,18 @@
 package main
 
 import (
+	"NoteShareEFREI/api"
+	"NoteShareEFREI/backend"
 	"NoteShareEFREI/database"
 	"NoteShareEFREI/routers"
 	"log"
 	"net/http"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
+	//Database Setup
 	var err error
 
 	database.Db, err = database.ConnectToDBTcp()
@@ -24,9 +28,25 @@ func main() {
 		return
 	}
 
+	//Initialize the global values.
+	backend.Setup()
+
+	//Global http requests
+	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("files"))))
-    http.HandleFunc("/", routers.Handler)
+
+	//Router end points
+	http.HandleFunc("/", routers.Handler)
 	http.HandleFunc("/home", routers.HomeHandler)
 	http.HandleFunc("/createsheet", routers.CreateSheetHandler)
-    log.Fatal(http.ListenAndServe(":8080", nil))
+	http.HandleFunc("/login", routers.LoginHandler)
+	http.HandleFunc("/signup", routers.CreateHandler)
+	http.Handle("/account", backend.Accountmiddleware(http.HandlerFunc(routers.AccountHandler)))
+
+	//API end points (http responses with no html)
+	http.HandleFunc("/api/login", api.LoginHandler)
+	http.HandleFunc("/api/signup", api.CreateHandler)
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
+	//http.ListenAndServeTLS() //Serve over https (need to create certificate and key with openssl)(Requires 'personal' information and the domain name on which the website is hsoted (FQDN))
 }

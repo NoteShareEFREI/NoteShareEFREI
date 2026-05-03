@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NoteShare - Log In</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h2 class="logo">NoteShare</h2>
+    <nav class="nav" style="margin-left: auto;">
+        <a href="/">Home</a>
+    </nav>
+</header>
+
+<main class="main">
+    <div class="insert_in_page">
+        <p style="text-align: center;">Log in</p>
+
+        <form action="{{.Actionurl}}" method="POST" autocomplete="off">
+            <input name="name" required type="text" placeholder="Enter username or email" />
+            <input name="pwd" required type="password" placeholder="Enter Password" minlength="8" maxlength="32" />
+
+            <div>
+                <button type="button" onclick="const toggle = document.getElementById('toggle'); toggle.hidden = !toggle.hidden;" class="invisible">🛈 Password requirements</button>
+
+                <!-- PWD INFO -->
+                <div id="toggle" hidden>
+                    <p>
+                        The password must be at least 8 characters long.<br>
+                        The password must be less than 32 characters long.<br>
+                        The password must contain at least one non-alphanumeric character (special characters), excluding dangerous ones (,;"\'`./<>) <br>
+                        The password must contain at least one lower case letter.<br>
+                        The password must contain at least one upper case letter.
+                    </p>
+                </div>
+            </div>
+
+            <button type="submit">Connect</button>
+        </form>
+
+        {{.Eventual_error_display}}
+
+        <br>
+
+        <a href="/signup">Do you not have an account yet?<br>Click here to create one!</a>
+    </div>
+</main>
+
+</body>
+</html>
+

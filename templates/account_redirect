@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NoteShare - Account</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+
+<header class="topbar">
+    <h2 class="logo">NoteShare</h2>
+    <nav class="nav" style="margin-left: auto;">
+        <a href="/">Home</a>
+    </nav>
+</header>
+
+<main class="main">
+    <div class="insert_in_page">
+        <p style="text-align: center;">
+            Create an account if you want to publish a study sheet!
+        </p>
+        <a href="/signup">Create an account</a><br>
+        <a href="/login">Log In</a>
+    </div>
+</main>
+
+</body>
+</html>
+
