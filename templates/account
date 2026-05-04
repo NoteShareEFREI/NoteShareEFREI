@@ -28,8 +28,11 @@
         <h3>Account Description</h3>
 
         <h3>Others</h3>
-        <button>Delete the account</button>
         <p>Be careful, this change is permanent and cannot be undone.</p>
+        
+        <form onsubmit="if(!confirm('Are you sure you want to delete your account? This cannot be undone.')) return false; fetch('/api/account/delete', {method: 'POST', credentials: 'include'}).then(r => r.ok ? window.location.href = '/' : alert('Failed to delete')).catch(() => alert('Error')); return false;">
+            <button type="submit">Delete the account</button>
+        </form>
     </div>
 </main>
 
