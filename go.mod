@@ -3,7 +3,6 @@ module NoteShareEFREI
 go 1.26.2
 
 require (
-	github.com/dlclark/regexp2/v2 v2.0.0-beta.2
 	github.com/go-sql-driver/mysql v1.9.0
 	github.com/lestrrat-go/jwx/v4 v4.0.0
 	golang.org/x/crypto v0.50.0

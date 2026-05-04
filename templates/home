@@ -1,0 +1,158 @@
+<head>
+    <meta charset="UTF-8">
+    <title>NoteShare - Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .main { display: flex; width: 100%; max-width: none; margin: 0; }
+        .viewer { flex: 1; margin-left: 20px; }
+        .section { width: 100%; }
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+
+    <h2 class="logo">NoteShare</h2>
+
+    <form action="/home" method="get" class="search">
+        <input
+            class="search-input"
+            name="q"
+            type="text"
+            value="{{.Query}}"
+            placeholder="Search a category or a study sheet"
+        >
+    </form>
+
+    <nav class="nav">
+        <a href="/account">Account</a>
+        <a href="/admin">Admin</a>
+        {{if .IsLoggedIn}}
+        <a href="/logout">Log out</a>
+        {{else}}
+        <a href="/login">Log in</a>
+        {{end}}
+    </nav>
+
+</header>
+
+<main class="main" style="display:flex;">
+        <div class="content" style="flex:1;">
+            <section class="section">
+                <h3 class="section-title">Categories</h3>
+                <div class="categories">
+                    {{range .CategoriesWithSubs}}
+                    <a href="/home?category={{.Name}}" class="card">
+                        <strong>{{.Name}}</strong>
+                        <p>{{range $index, $sub := .SubCategories}}{{if $index}}, {{end}}{{$sub.Name}}{{end}}</p>
+                    </a>
+                    {{end}}
+                </div>
+            </section>
+
+            <section class="section">
+                <h3 class="section-title">Search results</h3>
+                <div class="results">
+                    {{range .Results}}
+                    <article class="result-card" onclick="viewSheet('{{.Hash}}', '{{.Category}}', '{{.SubCategory}}')">
+                        <h4>{{.Title}}</h4>
+                        <p class="category">{{.Category}}</p>
+                        <p>{{.Description}}</p>
+                    </article>
+                    {{else}}
+                    <div class="empty">
+                        No study sheet matches your search.
+                    </div>
+                    {{end}}
+            </section>
+
+            {{if .IsLoggedIn}}
+            <section class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Study Sheet Creation</h3>
+                    <div class="actions">
+                        <button onclick="toggle_add_sheet_mode()">Create study Sheet</button>
+                        <form id="studysheetuploadform"
+                              action="createsheet"
+                              method="POST"
+                              enctype="multipart/form-data"
+                              onsubmit="doSubmit()"
+                              style="display:none;">
+                            <label for="title">Title:</label>
+                            <input type="text" id="title" name="title" required>
+                            <br>
+                            <label for="category">Category:</label>
+                            <select id="category" name="category" required>
+                                {{range .Categories}}
+                                <option value="{{.Id}}">{{.Name}}</option>
+                                {{end}}
+                            </select>
+                            <br>
+                            <label for="subcategory">Subcategory:</label>
+                            <select id="subcategory" name="subcategory" required>
+                            </select>
+                            <br>
+                            <label for="studysheet">Upload a studysheet:</label>
+                            <input type="file" id="studysheet" name="studysheet"
+                                   accept="application/pdf, text/plain"/>
+                            <br>
+                            <button type="submit">Submit studysheet</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+            {{end}}
+        </div>
+
+        <div class="viewer" id="viewer" style="display:none; flex:1; margin-left:20px;">
+            <button onclick="closeViewer()">Close</button>
+            <a id="downloadBtn" download><button>Download</button></a>
+            <iframe id="sheetFrame" style="width:100%; height:600px;"></iframe>
+        </div>
+    </main>
+
+    <script>
+        let addsheetmode = false;
+        const subs = JSON.parse({{.SubCategoriesJSON}});
+        function updateSubcategories() {
+            const catId = parseInt(document.getElementById('category').value);
+            const subSelect = document.getElementById('subcategory');
+            subSelect.innerHTML = '';
+            subs.forEach(sub => {
+                if (sub.CategoryId === catId) {
+                    const opt = document.createElement('option');
+                    opt.value = sub.Name;
+                    opt.text = sub.Name;
+                    subSelect.appendChild(opt);
+                }
+            });
+        }
+        function viewSheet(hash, cat, sub) {
+            const url = `/css/${cat}/${sub}/${hash}`;
+            document.getElementById('sheetFrame').src = url;
+            document.getElementById('downloadBtn').href = url;
+            document.getElementById('viewer').style.display = 'block';
+        }
+        function closeViewer() {
+            document.getElementById('viewer').style.display = 'none';
+            document.getElementById('sheetFrame').src = '';
+        }
+        function toggle_add_sheet_mode(){
+            addsheetmode = !addsheetmode;
+            const form = document.getElementById("studysheetuploadform");
+            form.style.display = addsheetmode ? 'block' : 'none';
+        }
+        function doSubmit() {
+            if (confirm("Validate the submission of the study sheet:")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('category').addEventListener('change', updateSubcategories);
+            updateSubcategories(); // initial load
+        });
+    </script>
+</body>

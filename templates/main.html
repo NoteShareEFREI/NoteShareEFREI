@@ -14,11 +14,17 @@
         <div class="search">
             <input class="search-input" type="text" placeholder="Search a category or a study sheet" oninput="handleSearch(event)">
         </div>
+        <!-- Admin Button (only visible if user is admin) -->
+        <a href="/admin" id="admin-btn" style="display: none; text-decoration: none;">
+            <button title="Admin Panel">️</button>
+        </a>
         <!-- Account Button -->
-        <button>i</button>
+        <a href="/account" style="text-decoration: none;">
+            <button title="Account">i</button>
+        </a>
     </header>
 
-    <div class="main">
+    <div class="main main-grid">
         <aside class="folders">
         </aside>
 
