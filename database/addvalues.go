@@ -34,14 +34,29 @@ func Newaccount(name string, email string, hash string, Phone string, salt int) 
 	return Db.Exec(query, name, email, hash, Phone, salt)
 }
 
-func Newstudysheet(id int, hash string, name string, id_sub int, id_acc int) (sql.Result, error) {
-	return Db.Exec("INSERT INTO StudySheet (Id_Sheet, Hash, Name, Id_SubCategory, Id_Account) VALUES (?, ?, ?, ?, ?)", id, hash, name, id_sub, id_acc)
+func Newstudysheet(hash string, name string, id_sub int, id_acc int) (int, error) {
+	result, err := Db.Exec("INSERT INTO StudySheet (Hash, Name, Id_SubCategory, Id_Account) VALUES (?, ?, ?, ?)", hash, name, id_sub, id_acc)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	return int(id), err
 }
 
-func InsertCategory(id int, name string) (sql.Result, error) {
-	return Db.Exec("INSERT IGNORE INTO Category (Id_Category, Name) VALUES (?, ?)", id, name)
+func InsertCategory(name string) (int, error) {
+	result, err := Db.Exec("INSERT INTO Category (Name) VALUES (?)", name)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	return int(id), err
 }
 
-func InsertSubCategory(id int, name string, catId int) (sql.Result, error) {
-	return Db.Exec("INSERT IGNORE INTO SubCategory (Id_SubCategory, Name, Id_Category) VALUES (?, ?, ?)", id, name, catId)
+func InsertSubCategory(name string, catId int) (int, error) {
+	result, err := Db.Exec("INSERT INTO SubCategory (Name, Id_Category) VALUES (?, ?)", name, catId)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	return int(id), err
 }

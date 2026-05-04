@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,55 +29,54 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		switch action {
 		case "add_category":
 			categoryName := r.FormValue("category_name")
-			if categoryName != "" {
-				nextId, err := database.GetMaxCategoryId()
-				if err != nil {
-					nextId = 1
-				}
-				_, err = database.InsertCategory(nextId, categoryName)
-				if err != nil {
-					fmt.Println("Error adding category:", err.Error())
-				}
+			categoryName = strings.TrimSpace(categoryName)
+			if categoryName == "" {
+				// Handle error, perhaps redirect with error message
+				http.Redirect(w, r, "/admin?error=Category name cannot be empty", http.StatusSeeOther)
+				return
+			}
+			_, err = database.InsertCategory(categoryName)
+			if err != nil {
+				fmt.Println("Error adding category:", err.Error())
 			}
 		case "add_subcategory":
 			categoryIdStr := r.FormValue("category_id")
 			subcategoryName := r.FormValue("subcategory_name")
-			if categoryIdStr != "" && subcategoryName != "" {
-				categoryId, err := strconv.Atoi(categoryIdStr)
-				if err == nil {
-					nextId, err := database.GetMaxSubCategoryId()
-					if err != nil {
-						nextId = 1
-					}
-					_, err = database.InsertSubCategory(nextId, subcategoryName, categoryId)
-					if err != nil {
-						fmt.Println("Error adding subcategory:", err.Error())
-					}
-				}
+			subcategoryName = strings.TrimSpace(subcategoryName)
+			if categoryIdStr == "" || subcategoryName == "" {
+				http.Redirect(w, r, "/admin?error=Category ID and subcategory name are required", http.StatusSeeOther)
+				return
+			}
+			categoryId, err := strconv.Atoi(categoryIdStr)
+			if err != nil {
+				http.Redirect(w, r, "/admin?error=Invalid category ID", http.StatusSeeOther)
+				return
+			}
+			_, err = database.InsertSubCategory(subcategoryName, categoryId)
+			if err != nil {
+				fmt.Println("Error adding subcategory:", err.Error())
 			}
 		case "delete_category":
 			categoryIdStr := r.FormValue("category_id")
 			categoryId, err := strconv.Atoi(categoryIdStr)
-			if err == nil {
-				// First delete all subcategories of this category
-				err = database.DeleteSubCategoriesByCategoryId(categoryId)
-				if err != nil {
-					fmt.Println("Error deleting subcategories:", err.Error())
-				}
-				// Then delete the category
-				err = database.DeleteCategory(categoryId)
-				if err != nil {
-					fmt.Println("Error deleting category:", err.Error())
-				}
+			if err != nil {
+				http.Redirect(w, r, "/admin?error=Invalid category ID", http.StatusSeeOther)
+				return
+			}
+			err = database.DeleteCategoryWithSubcategories(categoryId)
+			if err != nil {
+				fmt.Println("Error deleting category and subcategories:", err.Error())
 			}
 		case "delete_subcategory":
 			subcategoryIdStr := r.FormValue("subcategory_id")
 			subcategoryId, err := strconv.Atoi(subcategoryIdStr)
-			if err == nil {
-				err = database.DeleteSubCategory(subcategoryId)
-				if err != nil {
-					fmt.Println("Error deleting subcategory:", err.Error())
-				}
+			if err != nil {
+				http.Redirect(w, r, "/admin?error=Invalid subcategory ID", http.StatusSeeOther)
+				return
+			}
+			err = database.DeleteSubCategory(subcategoryId)
+			if err != nil {
+				fmt.Println("Error deleting subcategory:", err.Error())
 			}
 		}
 
@@ -99,23 +99,15 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If no categories exist, insert initial data
-	if len(categories) == 0 {
+	if len(categories) == 0 || len(subcategories) == 0 {
 		// Insert categories
-		_, err = database.InsertCategory(1, "Maths")
+		lastIdInsert, err := database.InsertCategory("TestCategory")
 		if err != nil {
-			fmt.Println("Error inserting Maths category:", err.Error())
+			fmt.Println("Error inserting Testcategory category:", err.Error())
 		}
-		_, err = database.InsertCategory(2, "Physics")
+		_, err = database.InsertSubCategory("TestSubCategory", lastIdInsert)
 		if err != nil {
-			fmt.Println("Error inserting Physics category:", err.Error())
-		}
-		_, err = database.InsertCategory(3, "Programming")
-		if err != nil {
-			fmt.Println("Error inserting Programming category:", err.Error())
-		}
-		_, err = database.InsertCategory(4, "Formation_Generale")
-		if err != nil {
-			fmt.Println("Error inserting Formation_Generale category:", err.Error())
+			fmt.Println("Error inserting TestSubcategory category:", err.Error())
 		}
 
 		// Refetch categories after insert

@@ -2,6 +2,7 @@ package routers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -61,53 +62,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// If no subcategories, insert initial data
-	if len(subs) == 0 {
-		// Insert categories
-		_, err = database.InsertCategory(1, "Maths")
+	if len(cats) == 0 || len(subs) == 0 {
+		lastIdInsert, err := database.InsertCategory("TestCategory")
 		if err != nil {
-			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
-			return
+			fmt.Println("Error inserting Testcategory category:", err.Error())
 		}
-		_, err = database.InsertCategory(2, "Physics")
+		_, err = database.InsertSubCategory("TestSubCategory", lastIdInsert)
 		if err != nil {
-			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
-			return
-		}
-		_, err = database.InsertCategory(3, "Programming")
-		if err != nil {
-			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
-			return
-		}
-		_, err = database.InsertCategory(4, "Formation_Generale")
-		if err != nil {
-			http.Error(w, "Failed to insert category", http.StatusInternalServerError)
-			return
-		}
-		// Insert subcategories
-		subsData := []struct {
-			id   int
-			name string
-			cat  int
-		}{
-			{1, "Calculus", 1},
-			{2, "LinearAlgebra", 1},
-			{3, "DigitalSystems", 2},
-			{4, "SignalProcessing", 2},
-			{5, "TransmissionSystems", 2},
-			{6, "C", 3},
-			{7, "Python", 3},
-			{8, "java1", 3},
-			{9, "java2", 3},
-			{10, "sustainabledigital", 3},
-			{11, "Anglais", 4},
-			{12, "Communication", 4},
-		}
-		for _, s := range subsData {
-			_, err = database.InsertSubCategory(s.id, s.name, s.cat)
-			if err != nil {
-				http.Error(w, "Failed to insert subcategory", http.StatusInternalServerError)
-				return
-			}
+			fmt.Println("Error inserting TestSubcategory category:", err.Error())
 		}
 		// Refetch after insert
 		cats, err = database.GetCategories()
