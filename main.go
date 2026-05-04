@@ -61,6 +61,7 @@ func main() {
 	http.HandleFunc("/api/check-admin", api.CheckAdminHandler)
 	http.HandleFunc("/api/comments", api.GetCommentsHandler)
 	http.HandleFunc("/api/comments/add", api.PostCommentHandler)
+	http.HandleFunc("/api/account/delete", api.DeleteAccountHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 	//http.ListenAndServeTLS() //Serve over https (need to create certificate and key with openssl)(Requires 'personal' information and the domain name on which the website is hsoted (FQDN))

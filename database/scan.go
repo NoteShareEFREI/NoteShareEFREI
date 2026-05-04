@@ -172,6 +172,16 @@ func DeleteSubCategory(subcategoryId int) error {
 	return err
 }
 
+// DeleteAccount deletes an account by ID
+func DeleteAccount(accountId int) error {
+	result, err := Db.Exec("DELETE FROM Account WHERE Id_Account = ?", accountId)
+	if err != nil {
+		return err
+	}
+	_, err = result.RowsAffected()
+	return err
+}
+
 // GetSheetIdByHash returns the Id_Sheet for a given hash
 func GetSheetIdByHash(hash string) (int, error) {
 	rows, err := Db.Query("SELECT Id_Sheet FROM StudySheet WHERE Hash = ?", hash)
