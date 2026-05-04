@@ -27,7 +27,9 @@
 
     <nav class="nav">
         <a href="/account">Account</a>
+        {{if .IsAdmin}}
         <a href="/admin">Admin</a>
+        {{end}}
         {{if .IsLoggedIn}}
         <a href="/logout">Log out</a>
         {{else}}
@@ -114,9 +116,11 @@
                     <span class="comments-label">Comments</span>
                     <button class="toggle-btn" onclick="toggleComments()">−</button>
                 </div>
+                {{if .IsLoggedIn}}
                 <div class="comment-input-wrap">
                     <input type="text" id="comment-input" placeholder="Add a comment..." onkeydown="handleCommentInput(event)">
                 </div>
+                {{end}}
                 <div id="comments-container">
                     <!-- Comments will be rendered here -->
                 </div>
