@@ -2,7 +2,6 @@ package routers
 
 import (
 	"encoding/json"
-	"html/template"
 	"net/http"
 	"strings"
 
@@ -26,8 +25,7 @@ type CategoryWithSubs struct {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	pagePath := "templates/home"
-	p, err := template.ParseFiles(pagePath)
+	p, err := GetTemplate("home")
 	if err != nil {
 		http.Error(w, "Failed to load home page", http.StatusInternalServerError)
 		return

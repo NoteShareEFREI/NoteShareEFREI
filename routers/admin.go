@@ -3,7 +3,6 @@ package routers
 import (
 	"NoteShareEFREI/database"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 )
@@ -135,9 +134,9 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		SubCategories: subcategories,
 	}
 
-	p, err := template.ParseFiles("templates/admin")
+	p, err := GetTemplate("admin")
 	if err != nil {
-		fmt.Println("Error parsing template:", err.Error())
+		fmt.Println("Error getting template:", err.Error())
 		http.Error(w, "Failed to load admin page", http.StatusInternalServerError)
 		return
 	}

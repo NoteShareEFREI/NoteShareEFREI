@@ -31,6 +31,13 @@ func main() {
 	//Initialize the global values.
 	backend.Setup()
 
+	//Initialize template cache
+	err = routers.InitializeTemplates()
+	if err != nil {
+		println("Failed to initialize templates:", err.Error())
+		return
+	}
+
 	//Global http requests
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("files"))))
