@@ -4,7 +4,6 @@ import (
 	"net/http"
 )
 
-
 func Handler(w http.ResponseWriter, r *http.Request) {
-	HomeHandler(w,r)
+	HomeHandler(w, r)
 }

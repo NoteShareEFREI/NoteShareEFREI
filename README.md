@@ -17,6 +17,7 @@ DB_HOST="db"
 DB_PORT=3306
 ```
 
+
 ## Build and run the project
 Currently for development
 ```sh

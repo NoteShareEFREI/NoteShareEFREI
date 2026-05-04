@@ -20,6 +20,11 @@ type studySheet struct {
 	SubCategory string
 }
 
+type CategoryWithSubs struct {
+	database.Category
+	SubCategories []database.SubCategory
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	pagePath := "templates/home"
 	p, err := template.ParseFiles(pagePath)
@@ -31,10 +36,18 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// Check authentication
 	token, err := jwt.ParseRequest(r, jwt.WithCookieKey("Http-Jwt"), jwt.WithVerify(false))
 	isLoggedIn := false
+	isAdmin := false
+	var accountId int
 	if err == nil {
-		_, err = backend.ValidateJWT(token)
+		accId, err := backend.ValidateJWT(token)
 		if err == nil {
 			isLoggedIn = true
+			accountId = accId
+			// Check if user is admin
+			admin, err := database.IsAdmin(accountId)
+			if err == nil {
+				isAdmin = admin
+			}
 		}
 	}
 
@@ -150,22 +163,45 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// Prepare categories with subcategories for template
+	categoriesWithSubs := make([]CategoryWithSubs, len(cats))
+	for i, cat := range cats {
+		categoriesWithSubs[i] = CategoryWithSubs{
+			Category:      cat,
+			SubCategories: make([]database.SubCategory, 0),
+		}
+	}
+	for _, sub := range subs {
+		for i := range categoriesWithSubs {
+			if categoriesWithSubs[i].Id == sub.CategoryId {
+				categoriesWithSubs[i].SubCategories = append(categoriesWithSubs[i].SubCategories, sub)
+				break
+			}
+		}
+	}
+
 	data := struct {
-		Query             string
-		SelectedCategory  string
-		Results           []studySheet
-		HasFilters        bool
-		IsLoggedIn        bool
-		Categories        []database.Category
-		SubCategoriesJSON string
+		Query              string
+		SelectedCategory   string
+		Results            []studySheet
+		HasFilters         bool
+		IsLoggedIn         bool
+		IsAdmin            bool
+		Categories         []database.Category
+		SubCategories      []database.SubCategory
+		CategoriesWithSubs []CategoryWithSubs
+		SubCategoriesJSON  string
 	}{
-		Query:             query,
-		SelectedCategory:  selectedCategory,
-		Results:           results,
-		HasFilters:        query != "" || selectedCategory != "",
-		IsLoggedIn:        isLoggedIn,
-		Categories:        cats,
-		SubCategoriesJSON: string(subCatsJSON),
+		Query:              query,
+		SelectedCategory:   selectedCategory,
+		Results:            results,
+		HasFilters:         query != "" || selectedCategory != "",
+		IsLoggedIn:         isLoggedIn,
+		IsAdmin:            isAdmin,
+		Categories:         cats,
+		SubCategories:      subs,
+		CategoriesWithSubs: categoriesWithSubs,
+		SubCategoriesJSON:  string(subCatsJSON),
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

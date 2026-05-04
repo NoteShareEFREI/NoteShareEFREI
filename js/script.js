@@ -179,16 +179,42 @@ const sheetComments = {
     ]
 };
 
-const sheetData = {
-    'Study sheet 1': { pdf: 'pdfs/bulletin-may26.pdf' },
-    'Study sheet 2': { pdf: 'pdfs/Bee_Movie.pdf' },
-    'Study sheet 3': { pdf: 'pdfs/The_Chapel_on_the_Cliffs_v1.0.pdf' },
-};
-
 const folderData = {
     'Folder1': ['Study sheet 1', 'Study sheet 2', 'Study sheet 3'],
     'Folder2': ['Sheet A'],
     'Folder3': ['Sheet B'],
 };
 
-document.addEventListener('DOMContentLoaded', renderSidebar);
+document.addEventListener('DOMContentLoaded', () => {
+    renderSidebar();
+    checkAdminStatus();
+});
+
+// Check if user is admin and show/hide admin button
+function checkAdminStatus() {
+    // Check if admin button exists
+    const adminBtn = document.getElementById('admin-btn');
+    if (!adminBtn) return;
+
+    // Try to fetch admin status from an API endpoint or check from localStorage
+    // Since we need to check the user's admin status, we can make a request
+    fetch('/api/check-admin', {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        return { isAdmin: false };
+    })
+    .then(data => {
+        if (data.isAdmin) {
+            adminBtn.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.log('Could not check admin status:', error);
+        adminBtn.style.display = 'none';
+    });
+}

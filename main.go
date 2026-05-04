@@ -34,6 +34,8 @@ func main() {
 	//Global http requests
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("files"))))
+	http.Handle("/files/", http.StripPrefix("/files/", http.FileServer(http.Dir("files"))))
+	http.Handle("/pdfs/", http.StripPrefix("/pdfs/", http.FileServer(http.Dir("templates/pdfs"))))
 
 	//Router end points
 	http.HandleFunc("/", routers.Handler)
@@ -43,10 +45,12 @@ func main() {
 	http.HandleFunc("/signup", routers.CreateHandler)
 	http.HandleFunc("/logout", routers.LogoutHandler)
 	http.Handle("/account", backend.Accountmiddleware(http.HandlerFunc(routers.AccountHandler)))
+	http.Handle("/admin", backend.Accountmiddleware(http.HandlerFunc(routers.AdminHandler)))
 
 	//API end points (http responses with no html)
 	http.HandleFunc("/api/login", api.LoginHandler)
 	http.HandleFunc("/api/signup", api.CreateHandler)
+	http.HandleFunc("/api/check-admin", api.CheckAdminHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 	//http.ListenAndServeTLS() //Serve over https (need to create certificate and key with openssl)(Requires 'personal' information and the domain name on which the website is hsoted (FQDN))

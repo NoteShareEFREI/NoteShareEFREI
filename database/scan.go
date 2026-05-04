@@ -98,3 +98,93 @@ func GetNextSheetId() (int, error) {
 	}
 	return 1, nil
 }
+
+// IsAdmin checks if a user is an admin (Role = 0)
+func IsAdmin(accountId int) (bool, error) {
+	rows, err := Db.Query("SELECT Role FROM Account WHERE Id_Account = ?", accountId)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		var role int
+		err := rows.Scan(&role)
+		if err != nil {
+			return false, err
+		}
+		return role == 0, nil
+	}
+	return false, errors.New("Account not found")
+}
+
+// GetMaxCategoryId returns the next available category ID
+func GetMaxCategoryId() (int, error) {
+	rows, err := Db.Query("SELECT MAX(Id_Category) FROM Category")
+	if err != nil {
+		return 1, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		var maxId sql.NullInt64
+		err = rows.Scan(&maxId)
+		if err != nil {
+			return 1, err
+		}
+		if maxId.Valid {
+			return int(maxId.Int64) + 1, nil
+		}
+	}
+	return 1, nil
+}
+
+// DeleteCategory deletes a category by ID
+func DeleteCategory(categoryId int) error {
+	result, err := Db.Exec("DELETE FROM Category WHERE Id_Category = ?", categoryId)
+	if err != nil {
+		return err
+	}
+	_, err = result.RowsAffected()
+	return err
+}
+
+// UpdateCategory updates a category name
+func UpdateCategory(categoryId int, name string) error {
+	_, err := Db.Exec("UPDATE Category SET Name = ? WHERE Id_Category = ?", name, categoryId)
+	return err
+}
+
+// GetMaxSubCategoryId returns the next available subcategory ID
+func GetMaxSubCategoryId() (int, error) {
+	rows, err := Db.Query("SELECT MAX(Id_SubCategory) FROM SubCategory")
+	if err != nil {
+		return 1, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		var maxId sql.NullInt64
+		err = rows.Scan(&maxId)
+		if err != nil {
+			return 1, err
+		}
+		if maxId.Valid {
+			return int(maxId.Int64) + 1, nil
+		}
+	}
+	return 1, nil
+}
+
+// DeleteSubCategory deletes a subcategory by ID
+func DeleteSubCategory(subcategoryId int) error {
+	result, err := Db.Exec("DELETE FROM SubCategory WHERE Id_SubCategory = ?", subcategoryId)
+	if err != nil {
+		return err
+	}
+	_, err = result.RowsAffected()
+	return err
+}
+
+// DeleteSubCategoriesByCategoryId deletes all subcategories for a given category ID
+func DeleteSubCategoriesByCategoryId(categoryId int) error {
+	_, err := Db.Exec("DELETE FROM SubCategory WHERE Id_Category = ?", categoryId)
+	return err
+}
