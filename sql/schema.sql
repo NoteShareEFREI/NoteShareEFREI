@@ -9,7 +9,9 @@ CREATE TABLE if not exists Account(
    Phonenumber VARCHAR(15),
    salt Int,
    Role BOOLEAN, -- 0 for admin, 1 for user
-   PRIMARY KEY(Id_Account)
+   PRIMARY KEY(Id_Account),
+   INDEX idx_pseudo (Pseudo),
+   INDEX idx_email (Email)
 );
 
 CREATE TABLE if not exists Category(
@@ -34,7 +36,10 @@ CREATE TABLE if not exists StudySheet(
    Id_Account INT NOT NULL,
    PRIMARY KEY(Id_Sheet),
    FOREIGN KEY(Id_SubCategory) REFERENCES SubCategory(Id_SubCategory),
-   FOREIGN KEY(Id_Account) REFERENCES Account(Id_Account)
+   FOREIGN KEY(Id_Account) REFERENCES Account(Id_Account),
+   INDEX idx_hash (Hash),
+   INDEX idx_account (Id_Account),
+   INDEX idx_subcategory (Id_SubCategory)
 );
 
 CREATE TABLE if not exists Comment(
@@ -44,5 +49,7 @@ CREATE TABLE if not exists Comment(
     Id_Account INT NOT NULL,
     PRIMARY KEY(Id_Comment),
     FOREIGN KEY(Id_Sheet) REFERENCES StudySheet(Id_Sheet),
-    FOREIGN KEY(Id_Account) REFERENCES Account(Id_Account)
+    FOREIGN KEY(Id_Account) REFERENCES Account(Id_Account),
+    INDEX idx_sheet (Id_Sheet),
+    INDEX idx_account (Id_Account)
 );
