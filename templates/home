@@ -27,7 +27,9 @@
 
     <nav class="nav">
         <a href="/account">Account</a>
+        {{if .IsAdmin}}
         <a href="/admin">Admin</a>
+        {{end}}
         {{if .IsLoggedIn}}
         <a href="/logout">Log out</a>
         {{else}}
@@ -109,6 +111,20 @@
             <button onclick="closeViewer()">Close</button>
             <a id="downloadBtn" download><button>Download</button></a>
             <iframe id="sheetFrame" style="width:100%; height:600px;"></iframe>
+            <div id="comments-panel" class="comments-collapsable">
+                <div class="comments-toggle">
+                    <span class="comments-label">Comments</span>
+                    <button class="toggle-btn" onclick="toggleComments()">−</button>
+                </div>
+                {{if .IsLoggedIn}}
+                <div class="comment-input-wrap">
+                    <input type="text" id="comment-input" placeholder="Add a comment..." onkeydown="handleCommentInput(event)">
+                </div>
+                {{end}}
+                <div id="comments-container">
+                    <!-- Comments will be rendered here -->
+                </div>
+            </div>
         </div>
     </main>
 
@@ -133,6 +149,8 @@
             document.getElementById('sheetFrame').src = url;
             document.getElementById('downloadBtn').href = url;
             document.getElementById('viewer').style.display = 'block';
+            currentSheet = hash;
+            renderComments(hash);
         }
         function closeViewer() {
             document.getElementById('viewer').style.display = 'none';
@@ -155,4 +173,5 @@
             updateSubcategories(); // initial load
         });
     </script>
+    <script src="/js/script.js"></script>
 </body>

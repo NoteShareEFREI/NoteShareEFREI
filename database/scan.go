@@ -44,6 +44,14 @@ type SubCategory struct {
 	CategoryId int
 }
 
+type Comment struct {
+	Id        int
+	Content   string
+	SheetId   int
+	AccountId int
+	Pseudo    string // To include username
+}
+
 func GetCategories() ([]Category, error) {
 	rows, err := Db.Query("SELECT Id_Category, Name FROM Category")
 	if err != nil {
@@ -187,4 +195,65 @@ func DeleteSubCategory(subcategoryId int) error {
 func DeleteSubCategoriesByCategoryId(categoryId int) error {
 	_, err := Db.Exec("DELETE FROM SubCategory WHERE Id_Category = ?", categoryId)
 	return err
+}
+
+// GetSheetIdByHash returns the Id_Sheet for a given hash
+func GetSheetIdByHash(hash string) (int, error) {
+	rows, err := Db.Query("SELECT Id_Sheet FROM StudySheet WHERE Hash = ?", hash)
+	if err != nil {
+		return -1, err
+	}
+	defer rows.Close()
+	return Onerowint(rows)
+}
+
+// GetCommentsBySheetId returns all comments for a sheet, including pseudo
+func GetCommentsBySheetId(sheetId int) ([]Comment, error) {
+	rows, err := Db.Query(`
+		SELECT Comment.Id_Comment, Comment.Content, Comment.Id_Sheet, Comment.Id_Account, Account.Pseudo
+		FROM Comment
+		JOIN Account ON Comment.Id_Account = Account.Id_Account
+		WHERE Comment.Id_Sheet = ?
+		ORDER BY Comment.Id_Comment ASC
+	`, sheetId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var comments []Comment
+	for rows.Next() {
+		var c Comment
+		err = rows.Scan(&c.Id, &c.Content, &c.SheetId, &c.AccountId, &c.Pseudo)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, c)
+	}
+	return comments, nil
+}
+
+// InsertComment adds a new comment
+func InsertComment(content string, sheetId int, accountId int) error {
+	_, err := Db.Exec("INSERT INTO Comment (Content, Id_Sheet, Id_Account) VALUES (?, ?, ?)", content, sheetId, accountId)
+	return err
+}
+
+// GetMaxCommentId returns the next available comment ID
+func GetMaxCommentId() (int, error) {
+	rows, err := Db.Query("SELECT MAX(Id_Comment) FROM Comment")
+	if err != nil {
+		return 1, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		var maxId sql.NullInt64
+		err = rows.Scan(&maxId)
+		if err != nil {
+			return 1, err
+		}
+		if maxId.Valid {
+			return int(maxId.Int64) + 1, nil
+		}
+	}
+	return 1, nil
 }

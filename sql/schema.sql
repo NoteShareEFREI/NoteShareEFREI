@@ -38,12 +38,11 @@ CREATE TABLE if not exists StudySheet(
 );
 
 CREATE TABLE if not exists Comment(
-   Id_Comment INT,
-   Content VARCHAR(1000),
-   Id_Sheet INT NOT NULL,
-   Id_Account INT NOT NULL,
-   PRIMARY KEY(Id_Comment),
-   FOREIGN KEY(Id_Sheet) REFERENCES StudySheet(Id_Sheet),
-   FOREIGN KEY(Id_Account) REFERENCES Account(Id_Account)
+    Id_Comment INT AUTO_INCREMENT,
+    Content VARCHAR(1000),
+    Id_Sheet INT NOT NULL,
+    Id_Account INT NOT NULL,
+    PRIMARY KEY(Id_Comment),
+    FOREIGN KEY(Id_Sheet) REFERENCES StudySheet(Id_Sheet),
+    FOREIGN KEY(Id_Account) REFERENCES Account(Id_Account)
 );
-
