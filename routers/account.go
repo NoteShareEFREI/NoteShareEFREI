@@ -4,19 +4,20 @@ import (
 	"NoteShareEFREI/database"
 	"database/sql"
 	"fmt"
-	"html/template"
 	"net/http"
 )
 
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
-	page_path := "templates/account"
 	acc_ID := r.Context().Value("Account ID").(int)
+	var templateName string
 	if acc_ID == -1 {
 		//The user is not logged in so we use a redirection page proposing that he creates an account.
-		page_path = "templates/account_redirect"
+		templateName = "account_redirect"
 		w.WriteHeader(http.StatusOK)
+	} else {
+		templateName = "account"
 	}
-	p, err := template.ParseFiles(page_path)
+	p, err := GetTemplate(templateName)
 	if err != nil {
 		fmt.Print(err.Error())
 		return

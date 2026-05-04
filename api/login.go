@@ -23,8 +23,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		hash := r.Form.Get("pwd")
 		name := r.Form.Get("name")
-		fmt.Print(hash)
-		fmt.Print(name)
 
 		correct, id := backend.VerifyPerson(hash, name)
 		if !correct {

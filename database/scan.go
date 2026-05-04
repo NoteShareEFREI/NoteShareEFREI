@@ -88,25 +88,6 @@ func GetSubCategories() ([]SubCategory, error) {
 	return subs, nil
 }
 
-func GetNextSheetId() (int, error) {
-	rows, err := Db.Query("SELECT MAX(Id_Sheet) FROM StudySheet")
-	if err != nil {
-		return 1, err
-	}
-	defer rows.Close()
-	if rows.Next() {
-		var maxId sql.NullInt64
-		err = rows.Scan(&maxId)
-		if err != nil {
-			return 1, err
-		}
-		if maxId.Valid {
-			return int(maxId.Int64) + 1, nil
-		}
-	}
-	return 1, nil
-}
-
 // IsAdmin checks if a user is an admin (Role = 0)
 func IsAdmin(accountId int) (bool, error) {
 	rows, err := Db.Query("SELECT Role FROM Account WHERE Id_Account = ?", accountId)
@@ -125,75 +106,69 @@ func IsAdmin(accountId int) (bool, error) {
 	return false, errors.New("Account not found")
 }
 
-// GetMaxCategoryId returns the next available category ID
-func GetMaxCategoryId() (int, error) {
-	rows, err := Db.Query("SELECT MAX(Id_Category) FROM Category")
-	if err != nil {
-		return 1, err
-	}
-	defer rows.Close()
-	if rows.Next() {
-		var maxId sql.NullInt64
-		err = rows.Scan(&maxId)
-		if err != nil {
-			return 1, err
-		}
-		if maxId.Valid {
-			return int(maxId.Int64) + 1, nil
-		}
-	}
-	return 1, nil
-}
-
-// DeleteCategory deletes a category by ID
-func DeleteCategory(categoryId int) error {
-	result, err := Db.Exec("DELETE FROM Category WHERE Id_Category = ?", categoryId)
+// DeleteCategoryWithSubcategories deletes a category and all its subcategories atomically
+func DeleteCategoryWithSubcategories(categoryId int) error {
+	tx, err := Db.Begin()
 	if err != nil {
 		return err
 	}
-	_, err = result.RowsAffected()
-	return err
-}
-
-// UpdateCategory updates a category name
-func UpdateCategory(categoryId int, name string) error {
-	_, err := Db.Exec("UPDATE Category SET Name = ? WHERE Id_Category = ?", name, categoryId)
-	return err
-}
-
-// GetMaxSubCategoryId returns the next available subcategory ID
-func GetMaxSubCategoryId() (int, error) {
-	rows, err := Db.Query("SELECT MAX(Id_SubCategory) FROM SubCategory")
-	if err != nil {
-		return 1, err
-	}
-	defer rows.Close()
-	if rows.Next() {
-		var maxId sql.NullInt64
-		err = rows.Scan(&maxId)
+	defer func() {
 		if err != nil {
-			return 1, err
+			tx.Rollback()
+		} else {
+			tx.Commit()
 		}
-		if maxId.Valid {
-			return int(maxId.Int64) + 1, nil
-		}
+	}()
+	_, err = tx.Exec(`
+        DELETE FROM Comment 
+        WHERE Id_Sheet IN (
+            SELECT Id_Sheet FROM StudySheet 
+            WHERE Id_SubCategory IN (
+                SELECT Id_SubCategory FROM SubCategory WHERE Id_Category = ?
+            )
+        )`, categoryId)
+	if err != nil {
+		return err
 	}
-	return 1, nil
+
+	_, err = tx.Exec("DELETE FROM StudySheet WHERE Id_SubCategory IN (SELECT Id_SubCategory FROM SubCategory WHERE Id_Category = ?)", categoryId)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM SubCategory WHERE Id_Category = ?", categoryId)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM Category WHERE Id_Category = ?", categoryId)
+	return err
 }
 
 // DeleteSubCategory deletes a subcategory by ID
 func DeleteSubCategory(subcategoryId int) error {
-	result, err := Db.Exec("DELETE FROM SubCategory WHERE Id_SubCategory = ?", subcategoryId)
+	tx, err := Db.Begin()
 	if err != nil {
 		return err
 	}
-	_, err = result.RowsAffected()
-	return err
-}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
 
-// DeleteSubCategoriesByCategoryId deletes all subcategories for a given category ID
-func DeleteSubCategoriesByCategoryId(categoryId int) error {
-	_, err := Db.Exec("DELETE FROM SubCategory WHERE Id_Category = ?", categoryId)
+	_, err = tx.Exec("DELETE FROM Comment WHERE Id_Sheet IN (SELECT Id_Sheet FROM StudySheet WHERE Id_SubCategory = ?)", subcategoryId)
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("DELETE FROM StudySheet WHERE Id_SubCategory = ?", subcategoryId)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM SubCategory WHERE ID_SubCategory = ?", subcategoryId)
 	return err
 }
 
@@ -236,24 +211,4 @@ func GetCommentsBySheetId(sheetId int) ([]Comment, error) {
 func InsertComment(content string, sheetId int, accountId int) error {
 	_, err := Db.Exec("INSERT INTO Comment (Content, Id_Sheet, Id_Account) VALUES (?, ?, ?)", content, sheetId, accountId)
 	return err
-}
-
-// GetMaxCommentId returns the next available comment ID
-func GetMaxCommentId() (int, error) {
-	rows, err := Db.Query("SELECT MAX(Id_Comment) FROM Comment")
-	if err != nil {
-		return 1, err
-	}
-	defer rows.Close()
-	if rows.Next() {
-		var maxId sql.NullInt64
-		err = rows.Scan(&maxId)
-		if err != nil {
-			return 1, err
-		}
-		if maxId.Valid {
-			return int(maxId.Int64) + 1, nil
-		}
-	}
-	return 1, nil
 }

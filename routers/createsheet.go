@@ -130,13 +130,7 @@ func CreateSheetHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Insert into database
-		nextId, err := database.GetNextSheetId()
-		if err != nil {
-			fmt.Print("Failed to get next sheet ID")
-			problemwithsheet(w, r)
-			return
-		}
-		_, err = database.Newstudysheet(nextId, filename, title, subId, accId)
+		_, err = database.Newstudysheet(filename, title, subId, accId)
 		if err != nil {
 			fmt.Print("Failed to insert into database")
 			problemwithsheet(w, r)

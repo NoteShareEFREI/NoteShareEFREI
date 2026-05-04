@@ -2,14 +2,12 @@ package routers
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	page_path := "templates/log_in"
 	backend_url := "api/login"
-	p, err := template.ParseFiles(page_path)
+	p, err := GetTemplate("login")
 	if err != nil {
 		fmt.Print(err.Error())
 		return
