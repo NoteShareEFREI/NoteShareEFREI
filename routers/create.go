@@ -2,14 +2,12 @@ package routers
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 )
 
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
-	page_path := "templates/create_account"
 	backend_url := "api/signup"
-	p, err := template.ParseFiles(page_path)
+	p, err := GetTemplate("signup")
 	if err != nil {
 		fmt.Print(err.Error())
 		return

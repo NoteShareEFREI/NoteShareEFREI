@@ -3,16 +3,14 @@ package backend
 import (
 	"NoteShareEFREI/database"
 	"fmt"
-	"math/rand"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Called when a new user account is created.
 func NewHash(password string) (string, int, error) {
-	salt_rounds := rand.Intn(15) + 10 //Random number between 11 and 25
+	salt_rounds := 12
 	//The salt rounds represents the number of time the string will be hashed.
-	//It being random makes it harder to calculate the original password but we need to be carefull for it to not to be to high as this is ressource intensive.
 	hash, err := HashPassword(password, salt_rounds)
 	if err != nil {
 		return "", 0, err
@@ -63,8 +61,6 @@ func HashPassword(password string, salt int) (string, error) {
 
 // VerifyPassword verifies if the given password matches the stored hash.
 func VerifyPassword(password, hash string) bool {
-	fmt.Print(hash)
-	fmt.Print(password)
 
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
